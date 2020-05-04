@@ -1,0 +1,164 @@
+package com.farzadz.poll;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import com.farzadz.poll.dataentry.dao.AnswerOptionDAO;
+import com.farzadz.poll.dataentry.dao.QuestionDAO;
+import com.farzadz.poll.dataentry.entity.AnswerOption;
+import com.farzadz.poll.dataentry.entity.Question;
+import com.farzadz.poll.domain.dto.AnswerOptionDTO;
+import com.farzadz.poll.service.PollService;
+import ma.glasnost.orika.MapperFacade;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringRunner;
+
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = PollApplication.class)
+@TestPropertySource(locations = "classpath:test.yaml")
+public class IntegrationTest {
+
+  @Autowired
+  private QuestionDAO questionDAO;
+
+  @Autowired
+  private AnswerOptionDAO answerOptionDAO;
+
+  @Autowired
+  private PollService pollService;
+
+  @Autowired
+  private MapperFacade mapper;
+
+  @Test
+  public void contextLoads() {
+  }
+
+  @Test
+  public void testRepositoriesFilled() {
+    assertNotNull(questionDAO.findAll());
+    assertNotNull(answerOptionDAO.findAll());
+    assertFalse(questionDAO.findAll().isEmpty());
+    assertFalse(answerOptionDAO.findAll().isEmpty());
+  }
+
+  @Test
+  public void getAllQuestionsAndAnswers_DatabaseIsFilled_ShouldReturnNonEmptyResults() {
+    assertFalse(pollService.getAllQuestions().isEmpty());
+    assertFalse(pollService.getAllAnswerOptions().isEmpty());
+  }
+
+  @Test
+  public void createNewQuestion__ShouldReturnPersistedQuestion() {
+    Question question = new Question();
+    question.setQuestionText("test");
+    Question questionInDb = pollService.createQuestion(question);
+    assertEquals(question.getQuestionText(), questionInDb.getQuestionText());
+  }
+
+  @Test
+  public void getQuestion_QuestionExists_ShouldReturnQuestionWithAnswerOptions() {
+    Question question = new Question();
+    question.setQuestionText("test");
+    Question questionInDb = pollService.createQuestion(question);
+    Question retrievedQuestion = pollService.getQuestion(questionInDb.getId());
+    assertEquals(question.getQuestionText(), retrievedQuestion.getQuestionText());
+    assertTrue(retrievedQuestion.getAnswerOptions().isEmpty());
+    AnswerOption answerOption = new AnswerOption();
+    answerOption.setVoteCount(0);
+    answerOption.setQuestion(question);
+    answerOption.setOptionText("optionText");
+    pollService.createAnswerOption(answerOption);
+    Question retrievedQuestionWithOptions = pollService.getQuestion(questionInDb.getId());
+    assertFalse(retrievedQuestionWithOptions.getAnswerOptions().isEmpty());
+  }
+
+  @Test
+  public void updateQuestion_QuestionExists_ShouldReturnUpdatedQuestion() {
+    Question question = new Question();
+    question.setQuestionText("test");
+    Question questionInDb = pollService.createQuestion(question);
+    Question newQuestion = new Question();
+    newQuestion.setQuestionText("newText");
+    Question updatedQuestionInDb = pollService.updateQuestion(questionInDb.getId(), newQuestion);
+    assertEquals(newQuestion.getQuestionText(), updatedQuestionInDb.getQuestionText());
+    assertEquals(questionInDb.getId(), updatedQuestionInDb.getId());
+  }
+
+  @Test
+  public void createNewAnswerOption_QuestionExists_ShouldReturnPersistedAnswerOption() {
+    Question question = new Question();
+    question.setQuestionText("test");
+    Question questionInDb = pollService.createQuestion(question);
+    assertEquals(questionInDb.getQuestionText(), "test");
+    AnswerOption answerOption = new AnswerOption();
+    answerOption.setVoteCount(0);
+    answerOption.setOptionText("optionText");
+    answerOption.setQuestion(questionInDb);
+    AnswerOption answerOptionInDb = pollService.createAnswerOption(answerOption);
+    assertEquals(answerOption.getOptionText(), answerOptionInDb.getOptionText());
+    assertEquals(answerOption.getQuestion(), questionInDb);
+  }
+
+  @Test(expected = DataIntegrityViolationException.class)
+  public void createNewAnswerOption_QuestionDoesNotExist_ShouldThrowException() {
+    AnswerOption answerOption = new AnswerOption();
+    answerOption.setVoteCount(0);
+    answerOption.setOptionText("optionText");
+    pollService.createAnswerOption(answerOption);
+  }
+
+  @Test
+  public void updateAnswerOption_AnswerOptionExists_ShouldReturnUpdatedAnswerOption() {
+    Question question = new Question();
+    question.setQuestionText("test");
+    Question questionInDb = pollService.createQuestion(question);
+    AnswerOption answerOption = new AnswerOption();
+    answerOption.setVoteCount(0);
+    answerOption.setOptionText("optionText");
+    answerOption.setQuestion(questionInDb);
+    AnswerOption answerOptionInDb = pollService.createAnswerOption(answerOption);
+    AnswerOption newAnswerOption = new AnswerOption();
+    newAnswerOption.setOptionText("newOptionText");
+    newAnswerOption.setVoteCount(1);
+    newAnswerOption.setQuestion(questionInDb);
+    AnswerOption updatedAnswerOption = pollService
+        .updateAnswerOption(answerOptionInDb.getId(), questionInDb.getId(), newAnswerOption);
+    assertEquals(newAnswerOption.getVoteCount(), updatedAnswerOption.getVoteCount());
+    assertEquals(newAnswerOption.getOptionText(), updatedAnswerOption.getOptionText());
+  }
+
+  @Test
+  public void updateAnswerOption_QuestionExists_ShouldReturnUpdatedAnswerOption() {
+    Question question = new Question();
+    question.setQuestionText("test");
+    Question questionInDb = pollService.createQuestion(question);
+    AnswerOption answerOption = new AnswerOption();
+    answerOption.setVoteCount(0);
+    answerOption.setOptionText("optionText");
+    answerOption.setQuestion(questionInDb);
+    AnswerOption answerOptionInDb = pollService.createAnswerOption(answerOption);
+    AnswerOption newAnswerOption = new AnswerOption();
+    newAnswerOption.setVoteCount(3);
+    newAnswerOption.setOptionText("newOptionText");
+    AnswerOption updatedAnswerOptionInDb = pollService
+        .updateAnswerOption(answerOptionInDb.getId(), answerOptionInDb.getQuestion().getId(), newAnswerOption);
+    assertEquals(newAnswerOption.getOptionText(), updatedAnswerOptionInDb.getOptionText());
+    assertEquals(newAnswerOption.getVoteCount(), updatedAnswerOptionInDb.getVoteCount());
+    assertEquals(answerOptionInDb.getId(), updatedAnswerOptionInDb.getId());
+  }
+
+  @Test
+  public void testMapper() {
+    AnswerOption answerOption = pollService.getAllAnswerOptions().get(0);
+    AnswerOptionDTO map = mapper.map(answerOption, AnswerOptionDTO.class);
+    System.out.println(map);
+  }
+}

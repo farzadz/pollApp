@@ -1,0 +1,20 @@
+spring:
+    jpa:
+        properties:
+            hibernate:
+                dialect: "org.hibernate.dialect.PostgreSQLDialect"
+                jpa:
+                    hibernate.ddl-auto : none
+                    show-sql : true
+    datasource:
+        hikari:
+            connectionTimeout: 20000
+            maximumPoolSize: 5
+
+        ## PostgreSQL
+        url: jdbc:postgresql://localhost:5440/postgres
+        username: "postgres"
+        password: "password"
+        initialization-mode: "always"
+        continue-on-error: true
+        schema: "classpath:/schema.sql, classpath:/data.sql"
