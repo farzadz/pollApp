@@ -16,7 +16,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -75,7 +74,7 @@ public class IntegrationTest {
     answerOption.setVoteCount(0);
     answerOption.setQuestion(question);
     answerOption.setOptionText("optionText");
-    pollService.createAnswerOption(answerOption);
+    pollService.createAnswerOption(questionInDb.getId(), answerOption);
     Question retrievedQuestionWithOptions = pollService.getQuestion(questionInDb.getId());
     assertFalse(retrievedQuestionWithOptions.getAnswerOptions().isEmpty());
   }
@@ -102,17 +101,17 @@ public class IntegrationTest {
     answerOption.setVoteCount(0);
     answerOption.setOptionText("optionText");
     answerOption.setQuestion(questionInDb);
-    AnswerOption answerOptionInDb = pollService.createAnswerOption(answerOption);
+    AnswerOption answerOptionInDb = pollService.createAnswerOption(questionInDb.getId(), answerOption);
     assertEquals(answerOption.getOptionText(), answerOptionInDb.getOptionText());
-    assertEquals(answerOption.getQuestion(), questionInDb);
+    assertEquals(answerOption.getQuestion().getId(), questionInDb.getId());
   }
 
-  @Test(expected = DataIntegrityViolationException.class)
+  @Test(expected = Exception.class)
   public void createNewAnswerOption_QuestionDoesNotExist_ShouldThrowException() {
     AnswerOption answerOption = new AnswerOption();
     answerOption.setVoteCount(0);
     answerOption.setOptionText("optionText");
-    pollService.createAnswerOption(answerOption);
+    pollService.createAnswerOption(null, answerOption);
   }
 
   @Test
@@ -124,7 +123,7 @@ public class IntegrationTest {
     answerOption.setVoteCount(0);
     answerOption.setOptionText("optionText");
     answerOption.setQuestion(questionInDb);
-    AnswerOption answerOptionInDb = pollService.createAnswerOption(answerOption);
+    AnswerOption answerOptionInDb = pollService.createAnswerOption(questionInDb.getId(), answerOption);
     AnswerOption newAnswerOption = new AnswerOption();
     newAnswerOption.setOptionText("newOptionText");
     newAnswerOption.setVoteCount(1);
@@ -144,7 +143,7 @@ public class IntegrationTest {
     answerOption.setVoteCount(0);
     answerOption.setOptionText("optionText");
     answerOption.setQuestion(questionInDb);
-    AnswerOption answerOptionInDb = pollService.createAnswerOption(answerOption);
+    AnswerOption answerOptionInDb = pollService.createAnswerOption(questionInDb.getId(), answerOption);
     AnswerOption newAnswerOption = new AnswerOption();
     newAnswerOption.setVoteCount(3);
     newAnswerOption.setOptionText("newOptionText");
