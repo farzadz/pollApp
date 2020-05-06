@@ -1,0 +1,28 @@
+version: '3.5'
+
+services:
+
+  postgresql:
+    image: postgres:9.6
+    container_name: poll_psql
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    expose:
+      - "5432"
+
+    restart: "no"
+#    networks:
+#      - buildnet
+
+  test_runner:
+    container_name: test_runner
+    build:
+      context: ..
+      dockerfile: docker/build/Dockerfile
+
+    environment:  # necessary to set for overriding config in tests.yaml used for local dev
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresql:5432/postgres
+
+    depends_on:
+      - postgresql
