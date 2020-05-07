@@ -4,4 +4,4 @@ WORKDIR /usr/src/build
 
 COPY [".", "./"]
 
-CMD ["sh", "-c", "mvn clean test"]
+CMD ["sh", "-c", "mvn clean verify"]
