@@ -23,6 +23,7 @@ public class CustomUserDetailsService implements UserDetailsService {
   @Autowired
   public CustomUserDetailsService(PasswordEncoder passwordEncoder) {
     this.passwordEncoder = passwordEncoder;
+
     users = List.of(new CustomUser("amin", passwordEncoder.encode("password"),
         Set.of(new SimpleGrantedAuthority("ROLE_" + ADMIN.name())), List.of(1L)));
 
