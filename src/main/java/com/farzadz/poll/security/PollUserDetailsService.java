@@ -1,8 +1,5 @@
 package com.farzadz.poll.security;
 
-import static com.farzadz.poll.security.UserRole.ADMIN;
-
-import com.farzadz.poll.security.CustomUser;
 import java.util.List;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,19 +11,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CustomUserDetailsService implements UserDetailsService {
+public class PollUserDetailsService implements UserDetailsService {
 
-  private PasswordEncoder passwordEncoder;
-
-  private List<CustomUser> users;
+  private List<PollUser> users;
 
   @Autowired
-  public CustomUserDetailsService(PasswordEncoder passwordEncoder) {
-    this.passwordEncoder = passwordEncoder;
-
-    users = List.of(new CustomUser("amin", passwordEncoder.encode("password"),
-        Set.of(new SimpleGrantedAuthority("ROLE_" + ADMIN.name())), List.of(1L)));
-
+  public PollUserDetailsService(PasswordEncoder passwordEncoder) {
+    users = List.of(
+        new PollUser("admin", passwordEncoder.encode("password"),
+            Set.of(new SimpleGrantedAuthority("ROLE_" + "ADMIN"))
+        ),
+        new PollUser("user", passwordEncoder.encode("password"),
+            Set.of(new SimpleGrantedAuthority("ROLE_" + "USER"))));
   }
 
   @Override

@@ -4,22 +4,44 @@ import com.farzadz.poll.dataentry.dao.AnswerOptionDAO;
 import com.farzadz.poll.dataentry.dao.QuestionDAO;
 import com.farzadz.poll.dataentry.entity.AnswerOption;
 import com.farzadz.poll.dataentry.entity.Question;
+import com.farzadz.poll.security.PollUser;
 import java.util.List;
+import javax.transaction.Transactional;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.acls.domain.BasePermission;
+import org.springframework.security.acls.domain.ObjectIdentityImpl;
+import org.springframework.security.acls.domain.PrincipalSid;
+import org.springframework.security.acls.model.MutableAcl;
+import org.springframework.security.acls.model.MutableAclService;
+import org.springframework.security.acls.model.ObjectIdentity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
 @Data
 @RequiredArgsConstructor
+@Transactional
 public class PollService {
 
   private final AnswerOptionDAO answerOptionDAO;
 
   private final QuestionDAO questionDAO;
 
+  private final MutableAclService aclService;
+
   public Question createQuestion(Question question) {
-    return questionDAO.saveAndFlush(question);
+
+    Question questionInDb = questionDAO.saveAndFlush(question);
+    PollUser user = (PollUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    ObjectIdentity oid = new ObjectIdentityImpl(Question.class, questionInDb.getId());
+    MutableAcl acl = aclService.createAcl(oid);
+    acl.insertAce(0, BasePermission.READ, new PrincipalSid(user.getUsername()), true);
+    acl.insertAce(0, BasePermission.ADMINISTRATION, new PrincipalSid("admin"), true);
+    aclService.updateAcl(acl);
+    return questionInDb;
+
   }
 
   public AnswerOption createAnswerOption(Long questionId, AnswerOption answerOption) {
@@ -28,6 +50,7 @@ public class PollService {
     return answerOptionDAO.saveAndFlush(answerOption);
   }
 
+  @PostFilter("hasPermission(filterObject, 'READ') or hasPermission(filterObject, 'ADMINISTRATION')")
   public List<Question> getAllQuestions() {
     return questionDAO.findAll();
   }

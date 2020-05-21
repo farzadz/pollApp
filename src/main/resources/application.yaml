@@ -27,3 +27,8 @@ spring:
     initialization-mode: "always"
     continue-on-error: true
     schema: "classpath:/schema.sql, classpath:/data.sql"
+#logging:
+#  level:
+#    org:
+#      springframework:
+#        security: DEBUG

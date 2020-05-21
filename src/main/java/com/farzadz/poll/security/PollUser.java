@@ -1,21 +1,14 @@
 package com.farzadz.poll.security;
 
-import java.util.List;
 import java.util.Set;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Data
+public class PollUser implements UserDetails {
 
-public class CustomUser implements UserDetails {
-
-  public CustomUser(String username, String password, Set<? extends GrantedAuthority> authorities, List<Long> questions) {
-    this.username = username;
-    this.password = password;
-    this.authorities = authorities;
-    this.questions = questions;
-  }
+  private Long id;
 
   private String username;
 
@@ -31,6 +24,10 @@ public class CustomUser implements UserDetails {
 
   private Set<? extends GrantedAuthority> authorities;
 
-  private List<Long> questions;
+  public PollUser(String username, String password, Set<? extends GrantedAuthority> authorities) {
+    this.username = username;
+    this.password = password;
+    this.authorities = authorities;
+  }
 
 }
