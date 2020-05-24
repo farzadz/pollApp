@@ -30,5 +30,12 @@ spring:
 #logging:
 #  level:
 #    org:
+#      hibernate:
+#        SQL: DEBUG
+#        type:
+#          descriptor:
+#            sql:
+#              BasicBinder: Trace
+#
 #      springframework:
 #        security: DEBUG

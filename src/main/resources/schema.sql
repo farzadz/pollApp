@@ -1,23 +1,23 @@
-CREATE TABLE question
+create table question
 (
-    id         bigint   NOT NULL,
-    text       varchar(500) NOT NULL,
-    epoch_time bigint      NOT NULL,
-    CONSTRAINT question_pk PRIMARY KEY (id)
+    id         bigint   not null,
+    text       varchar(500) not null,
+    epoch_time bigint      not null,
+    constraint question_pk primary key (id)
 );
 
-CREATE TABLE answer_option
+create table answer_option
 (
-    id           bigint    NOT NULL,
-    id_question  bigint    NOT NULL,
-    text         varchar(500) NOT NULL,
-    vote_count   int NOT NULL,
-    CONSTRAINT answer_option_pk PRIMARY KEY (id),
-    CONSTRAINT id_question_fk FOREIGN KEY (id_question) REFERENCES question (id)
+    id           bigint    not null,
+    id_question  bigint    not null,
+    text         varchar(500) not null,
+    vote_count   int not null,
+    constraint answer_option_pk primary key (id),
+    constraint id_question_fk foreign key (id_question) references question (id)
     );
 
 
-CREATE SEQUENCE IF NOT EXISTS user_id_sequence START 100;
+-- acl sample from spring acl template
 
 create table acl_sid(
     id bigserial not null primary key,
@@ -60,4 +60,28 @@ create table acl_entry(
     constraint foreign_fk_5 foreign key(sid) references acl_sid(id)
 );
 
-CREATE SEQUENCE IF NOT EXISTS hibernate_sequence START 10000;
+-- user related tables
+
+create table user_account(
+
+    id bigserial primary key,
+    username varchar(200) unique not null,
+    password varchar(200) not null,
+    enabled boolean not null
+);
+
+
+
+create table user_role(
+
+    id bigserial primary key,
+    user_id bigint not null,
+    role_type varchar(200) not null,
+    constraint user_fk foreign key(user_id) references user_account(id)
+);
+
+
+-- sequences
+
+create sequence if not exists hibernate_sequence start 10000;
+create sequence if not exists user_id_seq start 100;
