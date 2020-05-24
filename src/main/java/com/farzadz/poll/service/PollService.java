@@ -4,7 +4,7 @@ import com.farzadz.poll.dataentry.dao.AnswerOptionDAO;
 import com.farzadz.poll.dataentry.dao.QuestionDAO;
 import com.farzadz.poll.dataentry.entity.AnswerOption;
 import com.farzadz.poll.dataentry.entity.Question;
-import com.farzadz.poll.security.PollUser;
+import com.farzadz.poll.security.user.PollUser;
 import java.util.List;
 import javax.transaction.Transactional;
 import lombok.Data;

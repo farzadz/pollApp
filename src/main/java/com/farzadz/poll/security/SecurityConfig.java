@@ -26,12 +26,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .hasAnyRole("USER", "ADMIN").anyRequest().authenticated().and().httpBasic();
   }
 
-//    @Bean
-//    @Override
-//    public UserDetailsService userDetailsService() {
-//      UserDetails admin = User.builder().username("admin").password(passwordEncoder.encode("password"))
-//          .roles("ADMIN").build();
-//      return new InMemoryUserDetailsManager(admin);
-//    }
-
 }
