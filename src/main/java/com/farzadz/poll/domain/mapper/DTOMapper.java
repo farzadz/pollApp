@@ -1,11 +1,9 @@
 package com.farzadz.poll.domain.mapper;
 
-import com.farzadz.poll.dataentry.dao.AnswerOptionDAO;
 import com.farzadz.poll.dataentry.entity.AnswerOption;
 import com.farzadz.poll.dataentry.entity.Question;
 import com.farzadz.poll.domain.dto.AnswerOptionDTO;
 import com.farzadz.poll.domain.dto.QuestionDTO;
-import ma.glasnost.orika.BoundMapperFacade;
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.converter.ConverterFactory;

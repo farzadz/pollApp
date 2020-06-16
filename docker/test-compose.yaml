@@ -12,8 +12,7 @@ services:
       - "5432"
 
     restart: "no"
-#    networks:
-#      - buildnet
+
 
   test_runner:
     container_name: test_runner

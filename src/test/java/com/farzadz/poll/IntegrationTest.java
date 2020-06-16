@@ -9,19 +9,19 @@ import com.farzadz.poll.dataentry.dao.AnswerOptionDAO;
 import com.farzadz.poll.dataentry.dao.QuestionDAO;
 import com.farzadz.poll.dataentry.entity.AnswerOption;
 import com.farzadz.poll.dataentry.entity.Question;
-import com.farzadz.poll.domain.dto.AnswerOptionDTO;
 import com.farzadz.poll.service.PollService;
-import ma.glasnost.orika.MapperFacade;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = PollApplication.class)
 @TestPropertySource(locations = "classpath:test.yaml")
+@WithMockUser
 public class IntegrationTest {
 
   @Autowired
@@ -32,9 +32,6 @@ public class IntegrationTest {
 
   @Autowired
   private PollService pollService;
-
-  @Autowired
-  private MapperFacade mapper;
 
   @Test
   public void contextLoads() {
@@ -154,10 +151,4 @@ public class IntegrationTest {
     assertEquals(answerOptionInDb.getId(), updatedAnswerOptionInDb.getId());
   }
 
-  @Test
-  public void testMapper() {
-    AnswerOption answerOption = pollService.getAllAnswerOptions().get(0);
-    AnswerOptionDTO map = mapper.map(answerOption, AnswerOptionDTO.class);
-    System.out.println(map);
-  }
 }
