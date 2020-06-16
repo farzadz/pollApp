@@ -1,5 +1,6 @@
 package com.farzadz.poll.dataentry.entity;
 
+import com.farzadz.poll.service.IdSupport;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -12,13 +13,15 @@ import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "answer_option")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AnswerOption {
+@ToString(of = { "id", "optionText" })
+public class AnswerOption implements IdSupport {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
@@ -32,7 +35,7 @@ public class AnswerOption {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_question")
-  Question question;
+  private Question question;
 
   public void updateUpdatableProperites(AnswerOption answerOption) {
     this.optionText = answerOption.getOptionText();

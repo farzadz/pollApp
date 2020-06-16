@@ -10,12 +10,14 @@ import com.farzadz.poll.dataentry.entity.Question;
 import com.farzadz.poll.domain.dto.AnswerOptionDTO;
 import com.farzadz.poll.domain.dto.QuestionDTO;
 import com.farzadz.poll.service.PollService;
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +30,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class PollController {
 
   private final PollService pollService;
+
+  private final UserDetailsService userDetailsService;
 
   private final MapperFacade mapper;
 
@@ -71,14 +75,14 @@ public class PollController {
 
   @RequestMapping(value = POLL_ANSWER_OPTIONS_PATH, method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
   public AnswerOptionDTO createAnswerOption(@PathVariable final Long questionId,
-      @RequestBody AnswerOptionDTO answerOptionDTO) {
+      @RequestBody AnswerOptionDTO answerOptionDTO, Principal principal) {
     return mapper.map(pollService.createAnswerOption(questionId, mapper.map(answerOptionDTO, AnswerOption.class)),
         AnswerOptionDTO.class);
   }
 
   @RequestMapping(value = POLL_ANSWER_OPTION_PATH, method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-  public AnswerOptionDTO updateAnswerOption(@PathVariable final Long questionId, @PathVariable final Long answerOptionId,
-      @RequestBody AnswerOptionDTO answerOptionDTO) {
+  public AnswerOptionDTO updateAnswerOption(@PathVariable final Long questionId,
+      @PathVariable final Long answerOptionId, @RequestBody AnswerOptionDTO answerOptionDTO) {
     return mapper.map(
         pollService.updateAnswerOption(questionId, answerOptionId, mapper.map(answerOptionDTO, AnswerOption.class)),
         AnswerOptionDTO.class);
