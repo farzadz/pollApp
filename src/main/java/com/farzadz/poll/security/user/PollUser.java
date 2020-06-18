@@ -1,12 +1,10 @@
 package com.farzadz.poll.security.user;
 
-import com.farzadz.poll.security.user.UserRole;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -29,7 +27,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Table(name = "user_account")
 @NoArgsConstructor
 @EqualsAndHashCode(of = { "id" })
-@ToString(of = {"username"})
+@ToString(of = { "username" })
 public class PollUser implements UserDetails {
 
   @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, mappedBy = "user")
@@ -75,4 +73,12 @@ public class PollUser implements UserDetails {
     return isEnabled();
   }
 
+  public void updateUpdatableProperties(PollUser user) {
+    if (user.getUsername() != null) {
+      this.username = user.getUsername();
+    }
+    if (user.getPassword() != null) {
+      this.password = user.getPassword();
+    }
+  }
 }

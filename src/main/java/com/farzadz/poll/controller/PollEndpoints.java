@@ -14,5 +14,8 @@ public class PollEndpoints {
 
   public static final String POLL_ANSWER_OPTION_PATH = POLL_ANSWER_OPTIONS_PATH + "/{answerOptionId}";
 
+  public static final String POLL_USERS_PATH = BASE_API_PATH + "/users";
+
+  public static final String POLL_USER_PATH = POLL_USERS_PATH + "/{userId}";
 
 }
