@@ -35,7 +35,7 @@ public class PollService {
     Question questionInDb = questionDAO.saveAndFlush(question);
 
     Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    PollUser user = (PollUser) userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+    PollUser user = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
 
     pollAclService.boundAclForObject(questionInDb, user);
     return questionInDb;

@@ -30,13 +30,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 @ToString(of = { "username" })
 public class PollUser implements UserDetails {
 
-  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, mappedBy = "user")
-  List<UserRole> userRoles = new LinkedList<>();
-
   @Id
   @NonNull
   @SequenceGenerator(name = "user_id_seq", sequenceName = "user_id_seq", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
 
   @NonNull
@@ -46,6 +43,9 @@ public class PollUser implements UserDetails {
   private String password;
 
   private boolean enabled = true;
+
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "user")
+  private List<UserRole> userRoles = new LinkedList<>();
 
   public PollUser(String username, String password) {
     this.username = username;
@@ -80,5 +80,20 @@ public class PollUser implements UserDetails {
     if (user.getPassword() != null) {
       this.password = user.getPassword();
     }
+    if (user.getUserRoles() != null) {
+      this.userRoles = user.getUserRoles();
+    }
+  }
+
+  public void setUserRoles(List<UserRole> userRoles) {
+    userRoles.stream().forEach(userRole -> userRole.setUser(this));
+    this.userRoles = userRoles;
+  }
+
+  public void addRoleType(RoleType role) {
+    UserRole userRole = new UserRole();
+    userRole.setUser(this);
+    userRole.setRoleType(role);
+    this.userRoles.add(userRole);
   }
 }

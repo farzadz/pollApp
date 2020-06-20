@@ -24,8 +24,7 @@ public class PollUserDetailsService implements UserDetailsService {
 
   public PollUser createUser(PollUser user) {
     user.setPassword(passwordEncoder.encode(user.getPassword()));
-    user.setUserRoles(List.of(
-        roleDAO.findByRoleType(RoleType.USER).orElseThrow(() -> new IllegalArgumentException("User role not found"))));
+    user.addRoleType(RoleType.USER);
     return userDAO.save(user);
   }
 
