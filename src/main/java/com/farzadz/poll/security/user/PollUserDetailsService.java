@@ -1,5 +1,6 @@
 package com.farzadz.poll.security.user;
 
+import java.util.LinkedList;
 import java.util.List;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -18,12 +19,11 @@ public class PollUserDetailsService implements UserDetailsService {
 
   private final UserDAO userDAO;
 
-  private final UserRoleDAO roleDAO;
-
   private final PasswordEncoder passwordEncoder;
 
   public PollUser createUser(PollUser user) {
     user.setPassword(passwordEncoder.encode(user.getPassword()));
+    user.setUserRoles(new LinkedList<>());
     user.addRoleType(RoleType.USER);
     return userDAO.save(user);
   }

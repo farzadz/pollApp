@@ -1,28 +1,28 @@
-package com.farzadz.poll;
+package com.farzadz.poll.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import com.farzadz.poll.PollApplication;
 import com.farzadz.poll.dataentry.dao.AnswerOptionDAO;
 import com.farzadz.poll.dataentry.dao.QuestionDAO;
 import com.farzadz.poll.dataentry.entity.AnswerOption;
 import com.farzadz.poll.dataentry.entity.Question;
-import com.farzadz.poll.service.PollService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@RunWith(SpringRunner.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = PollApplication.class)
 @TestPropertySource(locations = "classpath:test.yaml")
 @WithMockUser
-public class IntegrationTest {
+public class PollServiceIntegrationTest {
 
   @Autowired
   private QuestionDAO questionDAO;
@@ -45,11 +45,6 @@ public class IntegrationTest {
     assertFalse(answerOptionDAO.findAll().isEmpty());
   }
 
-  @Test
-  public void getAllQuestionsAndAnswers_DatabaseIsFilled_ShouldReturnNonEmptyResults() {
-    assertFalse(pollService.getAllQuestions().isEmpty());
-    assertFalse(pollService.getAllAnswerOptions().isEmpty());
-  }
 
   @Test
   public void createNewQuestion__ShouldReturnPersistedQuestion() {

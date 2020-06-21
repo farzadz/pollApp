@@ -63,7 +63,9 @@ public class AclConfiguration extends GlobalMethodSecurityConfiguration {
 
   @Bean
   public EhCacheManagerFactoryBean aclCacheManager() {
-    return new EhCacheManagerFactoryBean();
+    EhCacheManagerFactoryBean ehCacheManagerFactoryBean = new EhCacheManagerFactoryBean();
+    ehCacheManagerFactoryBean.setShared(true);
+    return ehCacheManagerFactoryBean;
   }
 
   @Bean

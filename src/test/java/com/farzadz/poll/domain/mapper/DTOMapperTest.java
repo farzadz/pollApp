@@ -1,6 +1,7 @@
 package com.farzadz.poll.domain.mapper;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import com.farzadz.poll.dataentry.entity.AnswerOption;
 import com.farzadz.poll.dataentry.entity.Question;
@@ -46,7 +47,7 @@ public class DTOMapperTest {
   }
 
   @Test
-  public void testUserMapper() {
+  public void testUserMapperUserToDTO() {
     PollUser user = new PollUser("username", "password");
     UserRole role = new UserRole();
     role.setId(1L);
@@ -56,6 +57,14 @@ public class DTOMapperTest {
     PollUserDTO userDTO = mapper.map(user, PollUserDTO.class);
     assertEquals(user.getUsername(), userDTO.getUsername());
     assertEquals(user.getPassword(), userDTO.getPassword());
-    PollUser map = mapper.map(userDTO, PollUser.class);
+    assertTrue(userDTO.getRoles().contains("USER"));
+  }
+
+  @Test
+  public void testUserMapperDTOToUser() {
+    PollUserDTO userDTO = new PollUserDTO("user", "password", List.of("user"));
+    PollUser user = mapper.map(userDTO, PollUser.class);
+    assertEquals(userDTO.getUsername(), user.getUsername());
+    assertEquals(userDTO.getPassword(), user.getPassword());
   }
 }

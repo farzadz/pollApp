@@ -14,7 +14,7 @@
     <file>./logs/poll.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
       <!-- daily rollover -->
-      <fileNamePattern>athena.%d{yyyy-MM-dd}.log
+      <fileNamePattern>poll.%d{yyyy-MM-dd}.log
       </fileNamePattern>
       <maxHistory>10</maxHistory>
     </rollingPolicy>
@@ -26,7 +26,7 @@
     </encoder>
   </appender>
 
-  <logger name="org.springframework.security" level="DEBUG"/>
+  <logger name="org.springframework.security" level="INFO"/>
   <logger name="org.hibernate" level="WARN"/>
   <logger name="org.mongodb.driver" level="INFO"/>
 

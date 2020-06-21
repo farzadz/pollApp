@@ -42,47 +42,47 @@ public class PollService {
 
   }
 
-  @PreAuthorize("hasPermission(#questionId, 'com.farzadz.poll.dataentry.entity.Question', 'WRITE')")
+  @PreAuthorize("hasPermission(#questionId, 'com.farzadz.poll.dataentry.entity.Question', 'WRITE') OR hasRole('ROLE_ADMIN')")
   public AnswerOption createAnswerOption(Long questionId, AnswerOption answerOption) {
     Question question = getQuestion(questionId);
     answerOption.setQuestion(question);
     AnswerOption answerOptionInDb = answerOptionDAO.saveAndFlush(answerOption);
 
     Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    PollUser user = (PollUser) userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
+    PollUser user = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
 
     pollAclService.boundAclForObject(answerOptionInDb, user);
     return answerOptionInDb;
   }
 
-  @PostFilter("hasPermission(filterObject, 'READ')")
+  @PostFilter("hasPermission(filterObject, 'READ') OR hasRole('ROLE_ADMIN')")
   public List<Question> getAllQuestions() {
     return questionDAO.findAll();
   }
 
-  @PostFilter("hasPermission(filterObject, 'READ')")
+  @PostFilter("hasPermission(filterObject, 'READ') OR hasRole('ROLE_ADMIN')")
   public List<AnswerOption> getAllAnswerOptions() {
     return answerOptionDAO.findAll();
   }
 
-  @PreAuthorize("hasPermission(#questionId, 'com.farzadz.poll.dataentry.entity.Question', 'READ')")
+  @PreAuthorize("hasPermission(#questionId, 'com.farzadz.poll.dataentry.entity.Question', 'READ') OR hasRole('ROLE_ADMIN')")
   public Question getQuestion(Long questionId) {
     return questionDAO.findById(questionId).orElseThrow(() -> new IllegalArgumentException(String.format("No question found with id %s in the database", questionId)));
   }
 
-  @PreAuthorize("hasPermission(#questionId, 'com.farzadz.poll.dataentry.entity.Question', 'READ')")
+  @PreAuthorize("hasPermission(#questionId, 'com.farzadz.poll.dataentry.entity.Question', 'READ') OR hasRole('ROLE_ADMIN')")
   public List<AnswerOption> getAnswerOptionsForQuestion(Long questionId) {
     return answerOptionDAO.findByQuestionId(questionId);
   }
 
-  @PreAuthorize("hasPermission(#questionId, 'com.farzadz.poll.dataentry.entity.Question', 'WRITE')")
+  @PreAuthorize("hasPermission(#questionId, 'com.farzadz.poll.dataentry.entity.Question', 'WRITE') OR hasRole('ROLE_ADMIN')")
   public Question updateQuestion(Long questionId, Question question) {
     Question questionInDB = questionDAO.findById(questionId).orElseThrow(() -> new IllegalArgumentException(String.format("No question found with id %s in the database", questionId)));
     questionInDB.updateUpdatableProperties(question);
     return questionDAO.saveAndFlush(questionInDB);
   }
 
-  @PreAuthorize("hasPermission(#questionId, 'com.farzadz.poll.dataentry.entity.Question', 'WRITE')")
+  @PreAuthorize("hasPermission(#questionId, 'com.farzadz.poll.dataentry.entity.Question', 'WRITE') OR hasRole('ROLE_ADMIN')")
   public AnswerOption updateAnswerOption(Long answerOptionId, Long questionId, AnswerOption answerOption) {
     AnswerOption answerOptionInDB = answerOptionDAO.findByIdAndQuestionId(answerOptionId, questionId).orElseThrow(
         () -> new IllegalArgumentException(String.format("No answer option found for question %s and id %s.", questionId, answerOptionId)));
@@ -90,7 +90,7 @@ public class PollService {
     return answerOptionDAO.saveAndFlush(answerOptionInDB);
   }
 
-  @PreAuthorize("hasPermission(#questionId, 'com.farzadz.poll.dataentry.entity.Question', 'DELETE')")
+  @PreAuthorize("hasPermission(#questionId, 'com.farzadz.poll.dataentry.entity.Question', 'DELETE') OR hasRole('ROLE_ADMIN')")
   public void deleteQuestion(Long questionId) {
     if (questionDAO.existsById(questionId)) {
       questionDAO.deleteById(questionId);
@@ -108,7 +108,7 @@ public class PollService {
     }
   }
 
-  @PreAuthorize("hasPermission(#questionId, 'com.farzadz.poll.dataentry.entity.Question', 'READ')")
+  @PreAuthorize("hasPermission(#questionId, 'com.farzadz.poll.dataentry.entity.Question', 'READ') OR hasRole('ROLE_ADMIN')")
   public AnswerOption getAnswerOptionForQuestion(Long questionId, Long answerOptionId) {
     return answerOptionDAO.findByIdAndQuestionId(answerOptionId, questionId).orElseThrow(
         () -> new IllegalArgumentException(String.format("No answer option found for question %s and id %s in the database", questionId, answerOptionId)));

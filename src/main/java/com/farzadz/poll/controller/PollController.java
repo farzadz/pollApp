@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,8 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class PollController {
 
   private final PollService pollService;
-
-  private final UserDetailsService userDetailsService;
 
   private final MapperFacade mapper;
 

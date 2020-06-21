@@ -39,12 +39,17 @@ public class Question implements IdSupport {
   private Long createdAt;
 
   @NonNull
-  @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER, mappedBy = "question")
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "question")
   private List<AnswerOption> answerOptions = new ArrayList<>();
 
   @PrePersist
   void setCreatedAt() {
     this.createdAt = Instant.now().toEpochMilli();
+  }
+
+  public void addAnswerOption(AnswerOption answerOption) {
+    answerOptions.add(answerOption);
+    answerOption.setQuestion(this);
   }
 
   public void updateUpdatableProperties(Question question) {
