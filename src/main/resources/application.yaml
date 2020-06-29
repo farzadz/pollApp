@@ -27,15 +27,15 @@ spring:
     initialization-mode: "always"
     continue-on-error: true
     schema: "classpath:/schema.sql, classpath:/data.sql"
-#logging:
-#  level:
-#    org:
-#      hibernate:
-#        SQL: DEBUG
-#        type:
-#          descriptor:
-#            sql:
-#              BasicBinder: Trace
-#
-#      springframework:
-#        security: DEBUG
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: Trace
+
+      springframework:
+        security: DEBUG

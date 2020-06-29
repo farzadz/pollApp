@@ -1,5 +1,6 @@
 package com.farzadz.poll.security.user;
 
+import com.farzadz.poll.service.IdSupport;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -28,7 +29,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @NoArgsConstructor
 @EqualsAndHashCode(of = { "id" })
 @ToString(of = { "username" })
-public class PollUser implements UserDetails {
+public class PollUser implements UserDetails, IdSupport {
 
   @Id
   @NonNull
@@ -44,7 +45,7 @@ public class PollUser implements UserDetails {
 
   private boolean enabled = true;
 
-  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "user")
+  @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.REMOVE, CascadeType.PERSIST }, mappedBy = "user")
   private List<UserRole> userRoles = new LinkedList<>();
 
   public PollUser(String username, String password) {
@@ -74,14 +75,8 @@ public class PollUser implements UserDetails {
   }
 
   public void updateUpdatableProperties(PollUser user) {
-    if (user.getUsername() != null) {
-      this.username = user.getUsername();
-    }
     if (user.getPassword() != null) {
       this.password = user.getPassword();
-    }
-    if (user.getUserRoles() != null) {
-      this.userRoles = user.getUserRoles();
     }
   }
 

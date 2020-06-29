@@ -32,6 +32,18 @@ public interface SecurityAnnotations {
 
   @Target(ElementType.METHOD)
   @Retention(RetentionPolicy.RUNTIME)
+  @interface UserReadAccess {
+
+  }
+
+  @Target(ElementType.METHOD)
+  @Retention(RetentionPolicy.RUNTIME)
+  @interface UserWriteAccess {
+
+  }
+
+  @Target(ElementType.METHOD)
+  @Retention(RetentionPolicy.RUNTIME)
   @PreAuthorize("hasRole('ROLE_ADMIN')")
   @interface AdminOnly {
 

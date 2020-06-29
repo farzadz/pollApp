@@ -34,8 +34,8 @@ public class UserController {
   }
 
   @RequestMapping(value = POLL_USER_PATH, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public PollUserDTO getUser(@PathVariable Long userId) {
-    return mapper.map(userService.getUserById(userId), PollUserDTO.class);
+  public PollUserDTO getUser(@PathVariable String username) {
+    return mapper.map(userService.getUserByUsername(username), PollUserDTO.class);
   }
 
   @RequestMapping(value = POLL_USERS_PATH, method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -44,13 +44,13 @@ public class UserController {
   }
 
   @RequestMapping(value = POLL_USER_PATH, method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-  public PollUserDTO editUser(@PathVariable Long userId, @RequestBody PollUserDTO userDTO) {
-    return mapper.map(userService.updateUser(userId, mapper.map(userDTO, PollUser.class)), PollUserDTO.class);
+  public PollUserDTO editUser(@PathVariable String username, @RequestBody PollUserDTO userDTO) {
+    return mapper.map(userService.updateUser(username, mapper.map(userDTO, PollUser.class)), PollUserDTO.class);
   }
 
   @RequestMapping(value = POLL_USER_PATH, method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
-  public void deleteUser(@PathVariable Long userId) {
-    userService.deleteUser(userId);
+  public void deleteUser(@PathVariable String username) {
+    userService.deleteUser(username);
   }
 
 }

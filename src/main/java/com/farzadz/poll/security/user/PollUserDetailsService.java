@@ -1,6 +1,9 @@
 package com.farzadz.poll.security.user;
 
-import java.util.LinkedList;
+import com.farzadz.poll.security.SecurityAnnotations.AdminOnly;
+import com.farzadz.poll.security.SecurityAnnotations.UserReadAccess;
+import com.farzadz.poll.security.SecurityAnnotations.UserWriteAccess;
+import com.farzadz.poll.service.PollAclService;
 import java.util.List;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -21,33 +24,41 @@ public class PollUserDetailsService implements UserDetailsService {
 
   private final PasswordEncoder passwordEncoder;
 
+  private final PollAclService aclService;
+
   public PollUser createUser(PollUser user) {
+
+    if (userDAO.existsByUsername(user.getUsername())) {
+      throw new IllegalArgumentException(String.format("User with id %s already exists", user.getUsername()));
+    }
     user.setPassword(passwordEncoder.encode(user.getPassword()));
-    user.setUserRoles(new LinkedList<>());
     user.addRoleType(RoleType.USER);
-    return userDAO.save(user);
+    PollUser userInDb = userDAO.save(user);
+    aclService.boundAclForObject(userInDb, user);
+
+    return userInDb;
   }
 
   /**
    * Editing user in non-administrative fashion (by users themselves).
    */
-  public PollUser updateUser(Long userId, PollUser user) {
-    PollUser userInDb = userDAO.findById(userId)
-        .orElseThrow(() -> new IllegalArgumentException("User with id %s not found"));
+  @UserWriteAccess
+  public PollUser updateUser(String username, PollUser user) {
+    PollUser userInDb = getUserByUsername(username);
     user.setPassword(passwordEncoder.encode(user.getPassword()));
     userInDb.updateUpdatableProperties(user);
     return userDAO.save(userInDb);
   }
 
-  public void deleteUser(Long userId) {
-    if (!userDAO.existsById(userId)) {
-      throw new IllegalArgumentException(String.format("User %s not found", userId));
-    }
-    userDAO.deleteById(userId);
+  @UserWriteAccess
+  public void deleteUser(String username) {
+    PollUser user = loadUserByUsername(username);
+    userDAO.deleteById(user.getId());
   }
 
-  public PollUser getUserById(Long userId) {
-    return userDAO.findById(userId).orElseThrow(() -> new IllegalArgumentException("User %s not found"));
+  @UserReadAccess
+  public PollUser getUserByUsername(String username) {
+    return loadUserByUsername(username);
   }
 
   @Override
@@ -56,6 +67,7 @@ public class PollUserDetailsService implements UserDetailsService {
         .orElseThrow(() -> new IllegalArgumentException(String.format("No user found with %s", username)));
   }
 
+  @AdminOnly
   public List<PollUser> getAllUsers() {
     return userDAO.findAll();
   }
