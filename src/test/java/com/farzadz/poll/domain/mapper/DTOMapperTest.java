@@ -62,7 +62,8 @@ public class DTOMapperTest {
 
   @Test
   public void testUserMapperDTOToUser() {
-    PollUserDTO userDTO = new PollUserDTO("user", "password", List.of("user"));
+    PollUserDTO userDTO = new PollUserDTO("user", "password");
+    userDTO.setRoles(List.of("ROLE_USER"));
     PollUser user = mapper.map(userDTO, PollUser.class);
     assertEquals(userDTO.getUsername(), user.getUsername());
     assertEquals(userDTO.getPassword(), user.getPassword());

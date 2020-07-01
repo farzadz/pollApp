@@ -6,7 +6,6 @@ import com.farzadz.poll.dataentry.entity.AnswerOption;
 import com.farzadz.poll.dataentry.entity.Question;
 import com.farzadz.poll.security.SecurityAnnotations.QuestionRead;
 import com.farzadz.poll.security.SecurityAnnotations.QuestionWrite;
-import com.farzadz.poll.security.SecurityAnnotations.ReadAccessFilter;
 import com.farzadz.poll.security.user.PollUser;
 import com.farzadz.poll.security.user.PollUserDetailsService;
 import java.util.List;
@@ -17,6 +16,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
+/**
+ * @ReadAccessFilter and @QuestionRead annotations also available see  {@link com.farzadz.poll.security.SecurityAnnotations}.
+ */
 
 @Service
 @Data
@@ -57,31 +60,25 @@ public class PollService {
     return answerOptionInDb;
   }
 
-  @ReadAccessFilter
   public List<Question> getAllQuestions() {
     return questionDAO.findAll();
   }
 
-  @ReadAccessFilter
   public List<AnswerOption> getAllAnswerOptions() {
     return answerOptionDAO.findAll();
   }
 
-  @QuestionRead
   public Question getQuestion(Long questionId) {
-    return questionDAO.findById(questionId).orElseThrow(
-        () -> new IllegalArgumentException(String.format("No question found with id %s in the database", questionId)));
+    return questionDAO.findById(questionId).orElseThrow(() -> new IllegalArgumentException(String.format("No question found with id %s in the database", questionId)));
   }
 
-  @QuestionRead
   public List<AnswerOption> getAnswerOptionsForQuestion(Long questionId) {
     return answerOptionDAO.findByQuestionId(questionId);
   }
 
   @QuestionWrite
   public Question updateQuestion(Long questionId, Question question) {
-    Question questionInDB = questionDAO.findById(questionId).orElseThrow(
-        () -> new IllegalArgumentException(String.format("No question found with id %s in the database", questionId)));
+    Question questionInDB = questionDAO.findById(questionId).orElseThrow(() -> new IllegalArgumentException(String.format("No question found with id %s in the database", questionId)));
     questionInDB.updateUpdatableProperties(question);
     return questionDAO.saveAndFlush(questionInDB);
   }
@@ -89,8 +86,7 @@ public class PollService {
   @QuestionWrite
   public AnswerOption updateAnswerOption(Long answerOptionId, Long questionId, AnswerOption answerOption) {
     AnswerOption answerOptionInDB = answerOptionDAO.findByIdAndQuestionId(answerOptionId, questionId).orElseThrow(
-        () -> new IllegalArgumentException(
-            String.format("No answer option found for question %s and id %s.", questionId, answerOptionId)));
+        () -> new IllegalArgumentException(String.format("No answer option found for question %s and id %s.", questionId, answerOptionId)));
     answerOptionInDB.updateUpdatableProperites(answerOption);
     return answerOptionDAO.saveAndFlush(answerOptionInDB);
   }
@@ -109,16 +105,14 @@ public class PollService {
     if (answerOptionDAO.existsByIdAndQuestionId(answerOptionId, questionId)) {
       answerOptionDAO.deleteById(answerOptionId);
     } else {
-      throw new IllegalArgumentException(String
-          .format("No answer option found for question %s and id %s in the database", questionId, answerOptionId));
+      throw new IllegalArgumentException(String.format("No answer option found for question %s and id %s in the database", questionId, answerOptionId));
     }
   }
 
   @QuestionRead
   public AnswerOption getAnswerOptionForQuestion(Long questionId, Long answerOptionId) {
     return answerOptionDAO.findByIdAndQuestionId(answerOptionId, questionId).orElseThrow(
-        () -> new IllegalArgumentException(String
-            .format("No answer option found for question %s and id %s in the database", questionId, answerOptionId)));
+        () -> new IllegalArgumentException(String.format("No answer option found for question %s and id %s in the database", questionId, answerOptionId)));
   }
 
 }

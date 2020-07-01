@@ -32,12 +32,14 @@ public interface SecurityAnnotations {
 
   @Target(ElementType.METHOD)
   @Retention(RetentionPolicy.RUNTIME)
+  @PreAuthorize("isAuthenticated()")
   @interface UserReadAccess {
 
   }
 
   @Target(ElementType.METHOD)
   @Retention(RetentionPolicy.RUNTIME)
+  @PreAuthorize("isAuthenticated()")
   @interface UserWriteAccess {
 
   }

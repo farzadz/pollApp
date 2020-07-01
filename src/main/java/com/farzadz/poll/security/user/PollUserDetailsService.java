@@ -64,7 +64,7 @@ public class PollUserDetailsService implements UserDetailsService {
   @Override
   public PollUser loadUserByUsername(String username) throws UsernameNotFoundException {
     return userDAO.findByUsername(username)
-        .orElseThrow(() -> new IllegalArgumentException(String.format("No user found with %s", username)));
+        .orElseThrow(() -> new IllegalArgumentException(String.format("No user found with username %s", username)));
   }
 
   @AdminOnly

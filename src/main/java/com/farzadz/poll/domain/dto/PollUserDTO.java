@@ -1,17 +1,20 @@
 package com.farzadz.poll.domain.dto;
 
 import java.util.List;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 @Data
-@AllArgsConstructor
+@RequiredArgsConstructor
 @NoArgsConstructor
 public class PollUserDTO {
 
+  @NonNull
   private String username;
 
+  @NonNull
   private String password;
 
   private List<String> roles;
