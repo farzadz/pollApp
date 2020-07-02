@@ -4,8 +4,10 @@ import static com.farzadz.poll.TestUtils.asJsonString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.farzadz.poll.PollApplication;
@@ -49,16 +51,55 @@ public class UserControllerIntegrationTest {
     assertEquals(returnedUser.getUsername(), userDTO.getUsername());
     assertNotNull(returnedUser.getRoles());
 
-    mockMvc.perform(get(PollEndpoints.POLL_USER_PATH, returnedUser.getUsername())
-        .with(httpBasic(userDTO.getUsername(), userDTO.getPassword())).contentType(MediaType.APPLICATION_JSON)
-        .content(asJsonString(userDTO))).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+    mockMvc.perform(get(PollEndpoints.POLL_USER_PATH, userDTO.getUsername())
+        .with(httpBasic(userDTO.getUsername(), userDTO.getPassword()))).andExpect(status().isOk());
 
-    mockMvc.perform(get(PollEndpoints.POLL_USER_PATH, returnedUser.getUsername()).with(httpBasic("user", "password"))
-        .contentType(MediaType.APPLICATION_JSON).content(asJsonString(userDTO))).andExpect(status().isForbidden())
-        .andReturn().getResponse().getContentAsString();
+    mockMvc.perform(get(PollEndpoints.POLL_USER_PATH, userDTO.getUsername()).with(httpBasic("user", "password")))
+        .andExpect(status().isForbidden());
 
-    mockMvc.perform(get(PollEndpoints.POLL_USER_PATH, returnedUser.getUsername()).with(httpBasic("admin", "password"))
-        .contentType(MediaType.APPLICATION_JSON).content(asJsonString(userDTO))).andExpect(status().isOk()).andReturn()
-        .getResponse().getContentAsString();
+    mockMvc.perform(get(PollEndpoints.POLL_USER_PATH, userDTO.getUsername()).with(httpBasic("admin", "password")))
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  public void createUser__UserShouldBeEditableByHimselfAndAdmin() throws Exception {
+    String userName = "sampleUser" + random.nextLong();
+    PollUserDTO userDTO = new PollUserDTO(userName, "password");
+    mockMvc.perform(
+        post(PollEndpoints.POLL_USERS_PATH).contentType(MediaType.APPLICATION_JSON).content(asJsonString(userDTO)))
+        .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+
+    PollUserDTO updatedUser = new PollUserDTO(userName, "newPassword");
+
+    mockMvc.perform(put(PollEndpoints.POLL_USER_PATH, userName).contentType(MediaType.APPLICATION_JSON)
+        .content(asJsonString(updatedUser)).with(httpBasic(userName, userDTO.getPassword()))
+        .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+
+    mockMvc.perform(get(PollEndpoints.POLL_USER_PATH, userName).with(httpBasic(userName, updatedUser.getPassword())))
+        .andExpect(status().isOk());
+
+    mockMvc.perform(get(PollEndpoints.POLL_USER_PATH, userName).with(httpBasic("admin", "password")))
+        .andExpect(status().isOk());
+
+    PollUserDTO adminUpdatedUser = new PollUserDTO(userName, "adminCreatedPass");
+
+    mockMvc.perform(put(PollEndpoints.POLL_USER_PATH, userName).contentType(MediaType.APPLICATION_JSON)
+        .content(asJsonString(adminUpdatedUser)).with(httpBasic("admin", "password"))).andExpect(status().isOk());
+
+    mockMvc.perform(get(PollEndpoints.POLL_USER_PATH, userName).with(httpBasic(userName, updatedUser.getPassword())))
+        .andExpect(status().isUnauthorized());
+
+    mockMvc
+        .perform(get(PollEndpoints.POLL_USER_PATH, userName).with(httpBasic(userName, adminUpdatedUser.getPassword())))
+        .andExpect(status().isOk());
+
+    mockMvc.perform(
+        delete(PollEndpoints.POLL_USER_PATH, userName).with(httpBasic(userName, adminUpdatedUser.getPassword())))
+        .andExpect(status().isOk());
+
+    //Fixme status code is not informative enough
+    mockMvc
+        .perform(get(PollEndpoints.POLL_USER_PATH, userName).with(httpBasic(userName, adminUpdatedUser.getPassword())))
+        .andExpect(status().isUnauthorized());
   }
 }

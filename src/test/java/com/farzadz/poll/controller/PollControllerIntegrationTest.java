@@ -87,8 +87,7 @@ public class PollControllerIntegrationTest {
         get(PollEndpoints.POLL_QUESTION_PATH, returnedQuestion.getId()).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
-    String responseString = mockMvc
-        .perform(get(PollEndpoints.POLL_QUESTIONS_PATH).contentType(MediaType.APPLICATION_JSON))
+    String responseString = mockMvc.perform(get(PollEndpoints.POLL_QUESTIONS_PATH))
         .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
     List<QuestionDTO> questionDTOS = Arrays.asList(mapper.readValue(responseString, QuestionDTO[].class));
     assertTrue(questionDTOS.stream().anyMatch(q -> q.getText().equals(sampleQuestionText)));
