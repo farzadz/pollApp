@@ -4,14 +4,12 @@ import com.farzadz.poll.dataentry.dao.AnswerOptionDAO;
 import com.farzadz.poll.dataentry.dao.QuestionDAO;
 import com.farzadz.poll.dataentry.entity.AnswerOption;
 import com.farzadz.poll.dataentry.entity.Question;
-import com.farzadz.poll.security.SecurityAnnotations.QuestionWrite;
 import com.farzadz.poll.security.user.PollUser;
 import com.farzadz.poll.security.user.PollUserDetailsService;
 import java.util.List;
 import javax.transaction.Transactional;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -34,13 +32,9 @@ public class PollService {
 
   private final PollUserDetailsService userDetailsService;
 
-  @PreAuthorize("isAuthenticated()")
-  public Question createQuestion(Question question) {
+  public Question createQuestion(Question question, PollUser user) {
+
     Question questionInDb = questionDAO.saveAndFlush(question);
-
-    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    PollUser user = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
-
     pollAclService.boundAclForObject(questionInDb, user);
     return questionInDb;
 
@@ -51,7 +45,6 @@ public class PollService {
         () -> new IllegalArgumentException(String.format("No question found with id %s in the database", questionId)));
   }
 
-  @QuestionWrite
   public Question updateQuestion(Long questionId, Question question) {
     Question questionInDB = questionDAO.findById(questionId).orElseThrow(
         () -> new IllegalArgumentException(String.format("No question found with id %s in the database", questionId)));
@@ -59,7 +52,6 @@ public class PollService {
     return questionDAO.saveAndFlush(questionInDB);
   }
 
-  @QuestionWrite
   public void deleteQuestion(Long questionId) {
     if (questionDAO.existsById(questionId)) {
       questionDAO.deleteById(questionId);
@@ -72,7 +64,6 @@ public class PollService {
     return questionDAO.findAll();
   }
 
-  @QuestionWrite
   public AnswerOption createAnswerOption(Long questionId, AnswerOption answerOption) {
     Question question = getQuestion(questionId);
     answerOption.setQuestion(question);
@@ -95,10 +86,9 @@ public class PollService {
 
   public AnswerOption getAnswerOption(Long answerOptionId) {
     return answerOptionDAO.findById(answerOptionId).orElseThrow(
-        () -> new IllegalArgumentException(String.format("No answer option found with %id", answerOptionId)));
+        () -> new IllegalArgumentException(String.format("No answer option found with %s id", answerOptionId)));
   }
 
-  @QuestionWrite
   public AnswerOption updateAnswerOption(Long answerOptionId, Long questionId, AnswerOption answerOption) {
     AnswerOption answerOptionInDB = answerOptionDAO.findByIdAndQuestionId(answerOptionId, questionId).orElseThrow(
         () -> new IllegalArgumentException(
@@ -107,7 +97,6 @@ public class PollService {
     return answerOptionDAO.saveAndFlush(answerOptionInDB);
   }
 
-  @QuestionWrite
   public void deleteAnswerOption(Long questionId, Long answerOptionId) {
     if (answerOptionDAO.existsByIdAndQuestionId(answerOptionId, questionId)) {
       answerOptionDAO.deleteById(answerOptionId);

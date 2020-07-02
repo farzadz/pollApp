@@ -23,7 +23,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = PollApplication.class)
 @TestPropertySource(locations = "classpath:test.yaml")
-@WithMockUser
+@WithMockUser(username = "user")
 class VoteServiceIntegrationTest {
 
   @Autowired
@@ -45,7 +45,7 @@ class VoteServiceIntegrationTest {
     PollUser user = userDetailsService.createUser(new PollUser("sampleUser" + random.nextLong(), "pass"));
     Question question = new Question();
     question.setQuestionText("Is this a question?");
-    Question storedQuestion = pollService.createQuestion(question);
+    Question storedQuestion = pollService.createQuestion(question, user);
     AnswerOption answerOption = new AnswerOption();
     answerOption.setQuestion(storedQuestion);
     answerOption.setOptionText("This is an option");
@@ -62,7 +62,7 @@ class VoteServiceIntegrationTest {
     PollUser user = userDetailsService.createUser(new PollUser("sampleUser" + random.nextLong(), "pass"));
     Question question = new Question();
     question.setQuestionText("Is this a question?");
-    Question storedQuestion = pollService.createQuestion(question);
+    Question storedQuestion = pollService.createQuestion(question, user);
     AnswerOption answerOption = new AnswerOption();
     answerOption.setQuestion(storedQuestion);
     answerOption.setOptionText("This is an option");

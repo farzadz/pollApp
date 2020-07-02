@@ -10,6 +10,7 @@ import com.farzadz.poll.dataentry.dao.AnswerOptionDAO;
 import com.farzadz.poll.dataentry.dao.QuestionDAO;
 import com.farzadz.poll.dataentry.entity.AnswerOption;
 import com.farzadz.poll.dataentry.entity.Question;
+import com.farzadz.poll.security.user.PollUser;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = PollApplication.class)
 @TestPropertySource(locations = "classpath:test.yaml")
-@WithMockUser
+@WithMockUser(username = "user")
 public class PollServiceIntegrationTest {
 
   @Autowired
@@ -32,6 +33,8 @@ public class PollServiceIntegrationTest {
 
   @Autowired
   private PollService pollService;
+
+  private PollUser user = new PollUser("user", "password");
 
   @Test
   public void contextLoads() {
@@ -45,12 +48,11 @@ public class PollServiceIntegrationTest {
     assertFalse(answerOptionDAO.findAll().isEmpty());
   }
 
-
   @Test
   public void createNewQuestion__ShouldReturnPersistedQuestion() {
     Question question = new Question();
     question.setQuestionText("test");
-    Question questionInDb = pollService.createQuestion(question);
+    Question questionInDb = pollService.createQuestion(question, user);
     assertEquals(question.getQuestionText(), questionInDb.getQuestionText());
   }
 
@@ -58,7 +60,7 @@ public class PollServiceIntegrationTest {
   public void getQuestion_QuestionExists_ShouldReturnQuestionWithAnswerOptions() {
     Question question = new Question();
     question.setQuestionText("test");
-    Question questionInDb = pollService.createQuestion(question);
+    Question questionInDb = pollService.createQuestion(question, user);
     Question retrievedQuestion = pollService.getQuestion(questionInDb.getId());
     assertEquals(question.getQuestionText(), retrievedQuestion.getQuestionText());
     assertTrue(retrievedQuestion.getAnswerOptions().isEmpty());
@@ -74,7 +76,7 @@ public class PollServiceIntegrationTest {
   public void updateQuestion_QuestionExists_ShouldReturnUpdatedQuestion() {
     Question question = new Question();
     question.setQuestionText("test");
-    Question questionInDb = pollService.createQuestion(question);
+    Question questionInDb = pollService.createQuestion(question, user);
     Question newQuestion = new Question();
     newQuestion.setQuestionText("newText");
     Question updatedQuestionInDb = pollService.updateQuestion(questionInDb.getId(), newQuestion);
@@ -86,7 +88,7 @@ public class PollServiceIntegrationTest {
   public void createNewAnswerOption_QuestionExists_ShouldReturnPersistedAnswerOption() {
     Question question = new Question();
     question.setQuestionText("test");
-    Question questionInDb = pollService.createQuestion(question);
+    Question questionInDb = pollService.createQuestion(question, user);
     assertEquals(questionInDb.getQuestionText(), "test");
     AnswerOption answerOption = new AnswerOption();
     answerOption.setOptionText("optionText");
@@ -107,7 +109,7 @@ public class PollServiceIntegrationTest {
   public void updateAnswerOption_AnswerOptionExists_ShouldReturnUpdatedAnswerOption() {
     Question question = new Question();
     question.setQuestionText("test");
-    Question questionInDb = pollService.createQuestion(question);
+    Question questionInDb = pollService.createQuestion(question, user);
     AnswerOption answerOption = new AnswerOption();
     answerOption.setOptionText("optionText");
     answerOption.setQuestion(questionInDb);
@@ -124,7 +126,7 @@ public class PollServiceIntegrationTest {
   public void updateAnswerOption_QuestionExists_ShouldReturnUpdatedAnswerOption() {
     Question question = new Question();
     question.setQuestionText("test");
-    Question questionInDb = pollService.createQuestion(question);
+    Question questionInDb = pollService.createQuestion(question, user);
     AnswerOption answerOption = new AnswerOption();
     answerOption.setOptionText("optionText");
     answerOption.setQuestion(questionInDb);
