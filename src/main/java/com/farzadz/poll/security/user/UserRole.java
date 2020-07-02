@@ -28,7 +28,7 @@ public class UserRole {
   private Long id;
 
   @ManyToOne
-  @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+  @JoinColumn(name = "id_user", referencedColumnName = "id", nullable = false)
   private PollUser user;
 
   @Enumerated(EnumType.STRING)

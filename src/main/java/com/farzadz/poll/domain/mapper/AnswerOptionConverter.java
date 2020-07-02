@@ -11,6 +11,6 @@ public class AnswerOptionConverter extends CustomConverter<AnswerOption, AnswerO
   @Override
   public AnswerOptionDTO convert(AnswerOption source, Type<? extends AnswerOptionDTO> destinationType,
       MappingContext mappingContext) {
-    return new AnswerOptionDTO(source.getId(), source.getOptionText(), source.getVoteCount(), source.getQuestion().getId());
+    return new AnswerOptionDTO(source.getId(), source.getOptionText(), source.getQuestion().getId());
   }
 }

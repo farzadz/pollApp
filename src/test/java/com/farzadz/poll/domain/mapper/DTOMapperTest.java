@@ -38,11 +38,10 @@ public class DTOMapperTest {
   @Test
   public void testAnswerOptionMapper() {
     Question question = new Question(1L, "questionText", 1000L, new LinkedList<>());
-    AnswerOption answerOption = new AnswerOption(2L, "text", 3, question);
+    AnswerOption answerOption = new AnswerOption(2L, "text", question, new LinkedList<>());
     AnswerOptionDTO answerDTO = mapper.map(answerOption, AnswerOptionDTO.class);
     assertEquals(2L, answerDTO.getId().longValue());
     assertEquals("text", answerDTO.getText());
-    assertEquals(3, answerDTO.getVoteCount().intValue());
     assertEquals(1L, answerDTO.getQuestionId().longValue());
   }
 

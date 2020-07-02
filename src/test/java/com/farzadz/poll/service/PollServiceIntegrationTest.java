@@ -63,7 +63,6 @@ public class PollServiceIntegrationTest {
     assertEquals(question.getQuestionText(), retrievedQuestion.getQuestionText());
     assertTrue(retrievedQuestion.getAnswerOptions().isEmpty());
     AnswerOption answerOption = new AnswerOption();
-    answerOption.setVoteCount(0);
     answerOption.setQuestion(question);
     answerOption.setOptionText("optionText");
     pollService.createAnswerOption(questionInDb.getId(), answerOption);
@@ -90,7 +89,6 @@ public class PollServiceIntegrationTest {
     Question questionInDb = pollService.createQuestion(question);
     assertEquals(questionInDb.getQuestionText(), "test");
     AnswerOption answerOption = new AnswerOption();
-    answerOption.setVoteCount(0);
     answerOption.setOptionText("optionText");
     answerOption.setQuestion(questionInDb);
     AnswerOption answerOptionInDb = pollService.createAnswerOption(questionInDb.getId(), answerOption);
@@ -101,7 +99,6 @@ public class PollServiceIntegrationTest {
   @Test(expected = Exception.class)
   public void createNewAnswerOption_QuestionDoesNotExist_ShouldThrowException() {
     AnswerOption answerOption = new AnswerOption();
-    answerOption.setVoteCount(0);
     answerOption.setOptionText("optionText");
     pollService.createAnswerOption(null, answerOption);
   }
@@ -112,17 +109,14 @@ public class PollServiceIntegrationTest {
     question.setQuestionText("test");
     Question questionInDb = pollService.createQuestion(question);
     AnswerOption answerOption = new AnswerOption();
-    answerOption.setVoteCount(0);
     answerOption.setOptionText("optionText");
     answerOption.setQuestion(questionInDb);
     AnswerOption answerOptionInDb = pollService.createAnswerOption(questionInDb.getId(), answerOption);
     AnswerOption newAnswerOption = new AnswerOption();
     newAnswerOption.setOptionText("newOptionText");
-    newAnswerOption.setVoteCount(1);
     newAnswerOption.setQuestion(questionInDb);
     AnswerOption updatedAnswerOption = pollService
         .updateAnswerOption(answerOptionInDb.getId(), questionInDb.getId(), newAnswerOption);
-    assertEquals(newAnswerOption.getVoteCount(), updatedAnswerOption.getVoteCount());
     assertEquals(newAnswerOption.getOptionText(), updatedAnswerOption.getOptionText());
   }
 
@@ -132,17 +126,14 @@ public class PollServiceIntegrationTest {
     question.setQuestionText("test");
     Question questionInDb = pollService.createQuestion(question);
     AnswerOption answerOption = new AnswerOption();
-    answerOption.setVoteCount(0);
     answerOption.setOptionText("optionText");
     answerOption.setQuestion(questionInDb);
     AnswerOption answerOptionInDb = pollService.createAnswerOption(questionInDb.getId(), answerOption);
     AnswerOption newAnswerOption = new AnswerOption();
-    newAnswerOption.setVoteCount(3);
     newAnswerOption.setOptionText("newOptionText");
     AnswerOption updatedAnswerOptionInDb = pollService
         .updateAnswerOption(answerOptionInDb.getId(), answerOptionInDb.getQuestion().getId(), newAnswerOption);
     assertEquals(newAnswerOption.getOptionText(), updatedAnswerOptionInDb.getOptionText());
-    assertEquals(newAnswerOption.getVoteCount(), updatedAnswerOptionInDb.getVoteCount());
     assertEquals(answerOptionInDb.getId(), updatedAnswerOptionInDb.getId());
   }
 

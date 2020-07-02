@@ -13,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,6 +30,7 @@ import lombok.ToString;
 public class Question implements IdSupport {
 
   @Id
+  @SequenceGenerator(name = "question_id_seq", sequenceName = "question_id_seq", allocationSize = 1)
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
 

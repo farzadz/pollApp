@@ -11,7 +11,5 @@ public class AnswerOptionDTO {
 
   private String text;
 
-  private Integer voteCount;
-
   private Long questionId;
 }
