@@ -113,19 +113,17 @@ public class PollControllerIntegrationTest {
 
   }
 
-  //Fixme check specific exception type
-  @Test(expected = Exception.class)
+  @Test
   public void requestQuestionThatDostNotExist_NormalUser_ShouldReturnNotFound() throws Exception {
     mockMvc.perform(get(PollEndpoints.POLL_QUESTION_PATH, 12345).contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isNotFound());
+        .andExpect(status().isBadRequest());
 
   }
 
-  //Fixme check specific exception type
-  @Test(expected = Exception.class)
+  @Test
   public void requestQuestionThatDostNotExist_AdminUser_ShouldReturnNotFound() throws Exception {
     mockMvc.perform(get(PollEndpoints.POLL_QUESTION_PATH, 12345).with(user("user").roles("ADMIN"))
-        .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
+        .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
   }
 
 }

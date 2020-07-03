@@ -4,6 +4,7 @@ import static com.farzadz.poll.TestUtils.asJsonString;
 import static org.junit.Assert.assertEquals;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -73,10 +74,9 @@ class VoteControllerIntegrationTest {
     mockMvc.perform(delete(PollEndpoints.POLL_VOTE_PATH, returnedAnswerOption.getId()).with(user("user").roles("USER")))
         .andExpect(status().isOk());
 
-    //Fixme with proper exception management
     //vote should not exist anymore
-    //    mockMvc.perform(get(PollEndpoints.POLL_VOTE_PATH, returnedAnswerOption.getId()).with(user("user").roles("USER")))
-    //        .andExpect(status().isNotFound());
+    mockMvc.perform(get(PollEndpoints.POLL_VOTE_PATH, returnedAnswerOption.getId()).with(user("user").roles("USER")))
+        .andExpect(status().isBadRequest());
   }
 
   //TODO add checks for retracting vote with different user
