@@ -50,7 +50,7 @@ class VoteServiceIntegrationTest {
     answerOption.setQuestion(storedQuestion);
     answerOption.setOptionText("This is an option");
     AnswerOption storedAnswerOption = pollService.createAnswerOption(storedQuestion.getId(), answerOption, user);
-    UserVote vote = voteService.vote(user, storedAnswerOption.getId());
+    UserVote vote = voteService.vote(storedAnswerOption.getId(), user);
     assertEquals(storedAnswerOption.getId(), vote.getId().getAnswerOption().getId());
     assertEquals(user.getUsername(), vote.getId().getUser().getUsername());
     assertFalse(userVoteDAO.findByIdUser(user).isEmpty());
@@ -67,7 +67,7 @@ class VoteServiceIntegrationTest {
     answerOption.setQuestion(storedQuestion);
     answerOption.setOptionText("This is an option");
     AnswerOption storedAnswerOption = pollService.createAnswerOption(storedQuestion.getId(), answerOption, user);
-    voteService.vote(user, storedAnswerOption.getId());
+    voteService.vote(storedAnswerOption.getId(), user);
     assertFalse(userVoteDAO.findByIdUser(user).isEmpty());
 
     voteService.retractVote(user, storedAnswerOption.getId());

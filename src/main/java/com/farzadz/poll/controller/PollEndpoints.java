@@ -18,4 +18,8 @@ public class PollEndpoints {
 
   public static final String POLL_USER_PATH = POLL_USERS_PATH + "/{username}";
 
+  public static final String POLL_VOTES_PATH = POLLS_PATH + "/votes";
+
+  public static final String POLL_VOTE_PATH = POLL_VOTES_PATH + "/{answerOptionId}";
+
 }

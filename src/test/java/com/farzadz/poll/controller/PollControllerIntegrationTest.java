@@ -103,10 +103,9 @@ public class PollControllerIntegrationTest {
     assertEquals(answerOptionDTO.getQuestionId(), returnedAnswerOption.getQuestionId());
 
     //check user access to answerOption
-    String getResponse = mockMvc.perform(
-        get(PollEndpoints.POLL_ANSWER_OPTION_PATH, returnedQuestion.getId(), returnedAnswerOption.getId())
-            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn().getResponse()
-        .getContentAsString();
+    String getResponse = mockMvc
+        .perform(get(PollEndpoints.POLL_ANSWER_OPTION_PATH, returnedQuestion.getId(), returnedAnswerOption.getId()))
+        .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
     returnedAnswerOption = mapper.readValue(getResponse, AnswerOptionDTO.class);
     assertEquals(answerOptionDTO.getText(), returnedAnswerOption.getText());

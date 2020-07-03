@@ -5,9 +5,12 @@ import static org.junit.Assert.assertTrue;
 
 import com.farzadz.poll.dataentry.entity.AnswerOption;
 import com.farzadz.poll.dataentry.entity.Question;
+import com.farzadz.poll.dataentry.entity.UserVote;
+import com.farzadz.poll.dataentry.entity.VotePK;
 import com.farzadz.poll.domain.dto.AnswerOptionDTO;
 import com.farzadz.poll.domain.dto.PollUserDTO;
 import com.farzadz.poll.domain.dto.QuestionDTO;
+import com.farzadz.poll.domain.dto.VoteDTO;
 import com.farzadz.poll.security.user.PollUser;
 import com.farzadz.poll.security.user.RoleType;
 import com.farzadz.poll.security.user.UserRole;
@@ -75,5 +78,18 @@ public class DTOMapperTest {
     PollUser user = mapper.map(userDTO, PollUser.class);
     assertEquals(userDTO.getUsername(), user.getUsername());
     assertEquals(userDTO.getPassword(), user.getPassword());
+  }
+
+  @Test
+  public void testVoteMapperUserVoteToDTO() {
+    PollUser user = new PollUser("username", "password");
+    AnswerOption answerOption = new AnswerOption(1L, "option", null, new LinkedList<>());
+    VotePK votePK = new VotePK(user, answerOption);
+    UserVote userVote = new UserVote(votePK);
+    userVote.setCreatedAt(1999L);
+    VoteDTO voteDTO = mapper.map(userVote, VoteDTO.class);
+    assertEquals(user.getUsername(), voteDTO.getUsername());
+    assertEquals(userVote.getCreatedAt(), voteDTO.getCreatedAt());
+    assertEquals(answerOption.getId(), voteDTO.getAnswerOptionId());
   }
 }

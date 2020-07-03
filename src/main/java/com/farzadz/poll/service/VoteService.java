@@ -19,7 +19,7 @@ public class VoteService {
 
   private final UserVoteDAO userVoteDAO;
 
-  public UserVote vote(PollUser user, Long answerOptionId) {
+  public UserVote vote(Long answerOptionId, PollUser user) {
     AnswerOption answerOption = pollService.getAnswerOption(answerOptionId);
     UserVote userVote = new UserVote(new VotePK(user, answerOption));
     return userVoteDAO.save(userVote);
@@ -36,4 +36,9 @@ public class VoteService {
     return userVoteDAO.findByIdUser(user);
   }
 
+  public UserVote getVote(Long answerOptionId, PollUser user) {
+    AnswerOption answerOption = pollService.getAnswerOption(answerOptionId);
+    return userVoteDAO.findByIdUserAndIdAnswerOption(user, answerOption).orElseThrow(() -> new IllegalArgumentException(
+        String.format("User %s has not voted for answerOption %s", user.getUsername(), answerOptionId)));
+  }
 }

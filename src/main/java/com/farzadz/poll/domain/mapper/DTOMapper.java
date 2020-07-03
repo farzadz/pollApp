@@ -2,9 +2,11 @@ package com.farzadz.poll.domain.mapper;
 
 import com.farzadz.poll.dataentry.entity.AnswerOption;
 import com.farzadz.poll.dataentry.entity.Question;
+import com.farzadz.poll.dataentry.entity.UserVote;
 import com.farzadz.poll.domain.dto.AnswerOptionDTO;
 import com.farzadz.poll.domain.dto.PollUserDTO;
 import com.farzadz.poll.domain.dto.QuestionDTO;
+import com.farzadz.poll.domain.dto.VoteDTO;
 import com.farzadz.poll.security.user.PollUser;
 import java.util.stream.Collectors;
 import ma.glasnost.orika.CustomMapper;
@@ -23,6 +25,7 @@ public class DTOMapper extends ConfigurableMapper {
   protected void configure(MapperFactory factory) {
 
     factory.classMap(Question.class, QuestionDTO.class).field("questionText", "text").byDefault().register();
+    factory.classMap(UserVote.class, VoteDTO.class).byDefault().register();
     factory.classMap(AnswerOptionDTO.class, AnswerOption.class).field("text", "optionText").byDefault().register();
     factory.classMap(PollUser.class, PollUserDTO.class).customize(new CustomMapper<PollUser, PollUserDTO>() {
       @Override

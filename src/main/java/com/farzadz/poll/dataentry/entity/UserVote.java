@@ -32,4 +32,11 @@ public class UserVote {
     this.createdAt = Instant.now().toEpochMilli();
   }
 
+  public String getUsername() {
+    return id.getUser().getUsername();
+  }
+
+  public Long getAnswerOptionId() {
+    return id.getAnswerOption().getId();
+  }
 }
