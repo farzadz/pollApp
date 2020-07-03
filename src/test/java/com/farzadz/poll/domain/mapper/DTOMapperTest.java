@@ -36,13 +36,22 @@ public class DTOMapperTest {
   }
 
   @Test
-  public void testAnswerOptionMapper() {
+  public void testAnswerOptionMapperOptionToDTO() {
     Question question = new Question(1L, "questionText", 1000L, new LinkedList<>());
     AnswerOption answerOption = new AnswerOption(2L, "text", question, new LinkedList<>());
     AnswerOptionDTO answerDTO = mapper.map(answerOption, AnswerOptionDTO.class);
     assertEquals(2L, answerDTO.getId().longValue());
     assertEquals("text", answerDTO.getText());
     assertEquals(1L, answerDTO.getQuestionId().longValue());
+  }
+
+  @Test
+  public void testAnswerOptionMapperDTOToOption() {
+    AnswerOptionDTO answerOptionDTO = new AnswerOptionDTO(1L, "optionText", 2L);
+    AnswerOption answerOption = mapper.map(answerOptionDTO, AnswerOption.class);
+
+    assertEquals(answerOptionDTO.getId(), answerOption.getId());
+    assertEquals(answerOptionDTO.getText(), answerOption.getOptionText());
   }
 
   @Test

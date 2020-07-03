@@ -10,8 +10,6 @@ import java.util.List;
 import javax.transaction.Transactional;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 /**
@@ -64,13 +62,10 @@ public class PollService {
     return questionDAO.findAll();
   }
 
-  public AnswerOption createAnswerOption(Long questionId, AnswerOption answerOption) {
+  public AnswerOption createAnswerOption(Long questionId, AnswerOption answerOption, PollUser user) {
     Question question = getQuestion(questionId);
     answerOption.setQuestion(question);
     AnswerOption answerOptionInDb = answerOptionDAO.saveAndFlush(answerOption);
-
-    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    PollUser user = userDetailsService.loadUserByUsername(((UserDetails) principal).getUsername());
 
     pollAclService.boundAclForObject(answerOptionInDb, user);
     return answerOptionInDb;

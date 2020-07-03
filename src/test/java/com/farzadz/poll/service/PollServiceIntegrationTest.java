@@ -67,7 +67,7 @@ public class PollServiceIntegrationTest {
     AnswerOption answerOption = new AnswerOption();
     answerOption.setQuestion(question);
     answerOption.setOptionText("optionText");
-    pollService.createAnswerOption(questionInDb.getId(), answerOption);
+    pollService.createAnswerOption(questionInDb.getId(), answerOption, user);
     Question retrievedQuestionWithOptions = pollService.getQuestion(questionInDb.getId());
     assertFalse(retrievedQuestionWithOptions.getAnswerOptions().isEmpty());
   }
@@ -93,7 +93,7 @@ public class PollServiceIntegrationTest {
     AnswerOption answerOption = new AnswerOption();
     answerOption.setOptionText("optionText");
     answerOption.setQuestion(questionInDb);
-    AnswerOption answerOptionInDb = pollService.createAnswerOption(questionInDb.getId(), answerOption);
+    AnswerOption answerOptionInDb = pollService.createAnswerOption(questionInDb.getId(), answerOption, user);
     assertEquals(answerOption.getOptionText(), answerOptionInDb.getOptionText());
     assertEquals(answerOption.getQuestion().getId(), questionInDb.getId());
   }
@@ -102,7 +102,7 @@ public class PollServiceIntegrationTest {
   public void createNewAnswerOption_QuestionDoesNotExist_ShouldThrowException() {
     AnswerOption answerOption = new AnswerOption();
     answerOption.setOptionText("optionText");
-    pollService.createAnswerOption(null, answerOption);
+    pollService.createAnswerOption(null, answerOption, user);
   }
 
   @Test
@@ -113,7 +113,7 @@ public class PollServiceIntegrationTest {
     AnswerOption answerOption = new AnswerOption();
     answerOption.setOptionText("optionText");
     answerOption.setQuestion(questionInDb);
-    AnswerOption answerOptionInDb = pollService.createAnswerOption(questionInDb.getId(), answerOption);
+    AnswerOption answerOptionInDb = pollService.createAnswerOption(questionInDb.getId(), answerOption, user);
     AnswerOption newAnswerOption = new AnswerOption();
     newAnswerOption.setOptionText("newOptionText");
     newAnswerOption.setQuestion(questionInDb);
@@ -130,7 +130,7 @@ public class PollServiceIntegrationTest {
     AnswerOption answerOption = new AnswerOption();
     answerOption.setOptionText("optionText");
     answerOption.setQuestion(questionInDb);
-    AnswerOption answerOptionInDb = pollService.createAnswerOption(questionInDb.getId(), answerOption);
+    AnswerOption answerOptionInDb = pollService.createAnswerOption(questionInDb.getId(), answerOption, user);
     AnswerOption newAnswerOption = new AnswerOption();
     newAnswerOption.setOptionText("newOptionText");
     AnswerOption updatedAnswerOptionInDb = pollService

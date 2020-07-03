@@ -52,6 +52,7 @@ public class PollController {
   @PreAuthorize("isAuthenticated()")
   @RequestMapping(value = POLL_QUESTIONS_PATH, method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
   public QuestionDTO createQuestion(@RequestBody QuestionDTO questionDTO, Principal principal) {
+
     PollUser user = userDetailsService.loadUserByUsername((principal.getName()));
     return mapper.map(pollService.createQuestion(mapper.map(questionDTO, Question.class), user), QuestionDTO.class);
   }
@@ -84,7 +85,9 @@ public class PollController {
   @RequestMapping(value = POLL_ANSWER_OPTIONS_PATH, method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
   public AnswerOptionDTO createAnswerOption(@PathVariable final Long questionId,
       @RequestBody AnswerOptionDTO answerOptionDTO, Principal principal) {
-    return mapper.map(pollService.createAnswerOption(questionId, mapper.map(answerOptionDTO, AnswerOption.class)),
+
+    PollUser user = userDetailsService.loadUserByUsername((principal.getName()));
+    return mapper.map(pollService.createAnswerOption(questionId, mapper.map(answerOptionDTO, AnswerOption.class), user),
         AnswerOptionDTO.class);
   }
 

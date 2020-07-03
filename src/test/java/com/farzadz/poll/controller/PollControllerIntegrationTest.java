@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.farzadz.poll.PollApplication;
+import com.farzadz.poll.domain.dto.AnswerOptionDTO;
 import com.farzadz.poll.domain.dto.QuestionDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Arrays;
@@ -41,7 +42,7 @@ public class PollControllerIntegrationTest {
   private MockMvc mockMvc;
 
   @Test
-  public void createAndGetAllQuestions__ShouldReturnCreatedQuestion() throws Exception {
+  public void createAndGetAllQuestions_UserExists_ShouldReturnCreatedQuestion() throws Exception {
     String sampleQuestionText = "How was your day?";
     QuestionDTO questionDTO = new QuestionDTO();
     questionDTO.setText(sampleQuestionText);
@@ -66,7 +67,7 @@ public class PollControllerIntegrationTest {
   }
 
   @Test
-  public void createAndQuestionWithAnswerOption__ShouldReturnCreatedQuestionAndOptions() throws Exception {
+  public void createAndQuestionWithAnswerOption_UserExists_ShouldReturnCreatedQuestionAndOptions() throws Exception {
     String sampleQuestionText = "How was your day?";
     QuestionDTO questionDTO = new QuestionDTO();
     questionDTO.setText(sampleQuestionText);
@@ -76,21 +77,40 @@ public class PollControllerIntegrationTest {
             .content(asJsonString(questionDTO))).andExpect(status().isOk()).andReturn().getResponse()
         .getContentAsString();
 
+    String responseString = mockMvc.perform(get(PollEndpoints.POLL_QUESTIONS_PATH)).andExpect(status().isOk())
+        .andReturn().getResponse().getContentAsString();
+    List<QuestionDTO> questionDTOS = Arrays.asList(mapper.readValue(responseString, QuestionDTO[].class));
+    assertTrue(questionDTOS.stream().anyMatch(q -> q.getText().equals(sampleQuestionText)));
+
     QuestionDTO returnedQuestion = mapper.readValue(postResponse, QuestionDTO.class);
-    assertNotNull(returnedQuestion);
-    assertNotNull(returnedQuestion.getId());
-    assertNotNull(returnedQuestion.getCreatedAt());
-    assertEquals(sampleQuestionText, returnedQuestion.getText());
 
     //check access to created question by user
     mockMvc.perform(
         get(PollEndpoints.POLL_QUESTION_PATH, returnedQuestion.getId()).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
-    String responseString = mockMvc.perform(get(PollEndpoints.POLL_QUESTIONS_PATH))
-        .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
-    List<QuestionDTO> questionDTOS = Arrays.asList(mapper.readValue(responseString, QuestionDTO[].class));
-    assertTrue(questionDTOS.stream().anyMatch(q -> q.getText().equals(sampleQuestionText)));
+    AnswerOptionDTO answerOptionDTO = new AnswerOptionDTO();
+    answerOptionDTO.setQuestionId(returnedQuestion.getId());
+    answerOptionDTO.setText("answerOption");
+
+    postResponse = mockMvc.perform(
+        post(PollEndpoints.POLL_ANSWER_OPTIONS_PATH, returnedQuestion.getId()).with(user("user").roles("USER"))
+            .contentType(MediaType.APPLICATION_JSON).content(asJsonString(answerOptionDTO))).andExpect(status().isOk())
+        .andReturn().getResponse().getContentAsString();
+
+    AnswerOptionDTO returnedAnswerOption = mapper.readValue(postResponse, AnswerOptionDTO.class);
+    assertEquals(answerOptionDTO.getText(), returnedAnswerOption.getText());
+    assertEquals(answerOptionDTO.getQuestionId(), returnedAnswerOption.getQuestionId());
+
+    //check user access to answerOption
+    String getResponse = mockMvc.perform(
+        get(PollEndpoints.POLL_ANSWER_OPTION_PATH, returnedQuestion.getId(), returnedAnswerOption.getId())
+            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn().getResponse()
+        .getContentAsString();
+
+    returnedAnswerOption = mapper.readValue(getResponse, AnswerOptionDTO.class);
+    assertEquals(answerOptionDTO.getText(), returnedAnswerOption.getText());
+    assertEquals(answerOptionDTO.getQuestionId(), returnedAnswerOption.getQuestionId());
 
   }
 
