@@ -4,6 +4,9 @@ import static com.farzadz.poll.controller.PollEndpoints.POLL_USERS_PATH;
 import static com.farzadz.poll.controller.PollEndpoints.POLL_USER_PATH;
 
 import com.farzadz.poll.domain.dto.PollUserDTO;
+import com.farzadz.poll.security.SecurityAnnotations.AdminOnly;
+import com.farzadz.poll.security.SecurityAnnotations.UserReadAccess;
+import com.farzadz.poll.security.SecurityAnnotations.UserWriteAccess;
 import com.farzadz.poll.security.user.PollUser;
 import com.farzadz.poll.security.user.PollUserDetailsService;
 import java.util.List;
@@ -27,12 +30,13 @@ public class UserController {
 
   private final MapperFacade mapper;
 
+  @AdminOnly
   @RequestMapping(value = POLL_USERS_PATH, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public List<PollUserDTO> getAllUsers() {
-    return userService.getAllUsers().stream().map(user -> mapper.map(user, PollUserDTO.class))
-        .collect(Collectors.toList());
+    return userService.getAllUsers().stream().map(user -> mapper.map(user, PollUserDTO.class)).collect(Collectors.toList());
   }
 
+  @UserReadAccess
   @RequestMapping(value = POLL_USER_PATH, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public PollUserDTO getUser(@PathVariable String username) {
     return mapper.map(userService.getUserByUsername(username), PollUserDTO.class);
@@ -43,11 +47,13 @@ public class UserController {
     return mapper.map(userService.createUser(mapper.map(userDTO, PollUser.class)), PollUserDTO.class);
   }
 
+  @UserWriteAccess
   @RequestMapping(value = POLL_USER_PATH, method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
   public PollUserDTO editUser(@PathVariable String username, @RequestBody PollUserDTO userDTO) {
     return mapper.map(userService.updateUser(username, mapper.map(userDTO, PollUser.class)), PollUserDTO.class);
   }
 
+  @UserWriteAccess
   @RequestMapping(value = POLL_USER_PATH, method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
   public void deleteUser(@PathVariable String username) {
     userService.deleteUser(username);

@@ -1,8 +1,5 @@
 package com.farzadz.poll.security.user;
 
-import com.farzadz.poll.security.SecurityAnnotations.AdminOnly;
-import com.farzadz.poll.security.SecurityAnnotations.UserReadAccess;
-import com.farzadz.poll.security.SecurityAnnotations.UserWriteAccess;
 import com.farzadz.poll.service.PollAclService;
 import java.util.List;
 import javax.transaction.Transactional;
@@ -42,7 +39,7 @@ public class PollUserDetailsService implements UserDetailsService {
   /**
    * Editing user in non-administrative fashion (by users themselves).
    */
-  @UserWriteAccess
+
   public PollUser updateUser(String username, PollUser user) {
     PollUser userInDb = getUserByUsername(username);
     user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -50,13 +47,11 @@ public class PollUserDetailsService implements UserDetailsService {
     return userDAO.save(userInDb);
   }
 
-  @UserWriteAccess
   public void deleteUser(String username) {
     PollUser user = loadUserByUsername(username);
     userDAO.deleteById(user.getId());
   }
 
-  @UserReadAccess
   public PollUser getUserByUsername(String username) {
     return loadUserByUsername(username);
   }
@@ -67,7 +62,6 @@ public class PollUserDetailsService implements UserDetailsService {
         .orElseThrow(() -> new IllegalArgumentException(String.format("No user found with username %s", username)));
   }
 
-  @AdminOnly
   public List<PollUser> getAllUsers() {
     return userDAO.findAll();
   }
