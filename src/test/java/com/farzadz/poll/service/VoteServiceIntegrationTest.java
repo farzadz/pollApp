@@ -12,10 +12,11 @@ import com.farzadz.poll.dataentry.entity.UserVote;
 import com.farzadz.poll.security.user.PollUser;
 import com.farzadz.poll.security.user.PollUserDetailsService;
 import java.util.Random;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -24,7 +25,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @SpringBootTest(classes = PollApplication.class)
 @TestPropertySource(locations = "classpath:test.yaml")
 @WithMockUser(username = "user")
-class VoteServiceIntegrationTest {
+public class VoteServiceIntegrationTest {
 
   @Autowired
   private VoteService voteService;
@@ -41,7 +42,7 @@ class VoteServiceIntegrationTest {
   private Random random = new Random();
 
   @Test
-  void createVote_UserExists_ShouldCreateVoteInDB() {
+  public void createVote_UserExists_ShouldCreateVoteInDB() {
     PollUser user = userDetailsService.createUser(new PollUser("sampleUser" + random.nextLong(), "pass"));
     Question question = new Question();
     question.setQuestionText("Is this a question?");
@@ -58,7 +59,27 @@ class VoteServiceIntegrationTest {
   }
 
   @Test
-  void retractVote_UserExists_ShouldRemoveVote() {
+  public void voteCount_QuestionExists_ShouldUpdateAfterUserVote() {
+
+    PollUser owner = userDetailsService.createUser(new PollUser("sampleUser" + random.nextLong(), "pass"));
+    Question question = new Question();
+    question.setQuestionText("Is this a question?");
+    Question storedQuestion = pollService.createQuestion(question, owner);
+    AnswerOption answerOption = new AnswerOption();
+    answerOption.setQuestion(storedQuestion);
+    answerOption.setOptionText("This is an option");
+    AnswerOption storedAnswerOption = pollService.createAnswerOption(storedQuestion.getId(), answerOption, owner);
+    assertEquals(voteService.voteCount(storedAnswerOption.getId()).intValue(), 0);
+    voteService.vote(storedAnswerOption.getId(), owner);
+    assertEquals(voteService.voteCount(storedAnswerOption.getId()).intValue(), 1);
+    PollUser otherUser = userDetailsService.createUser(new PollUser("sampleUser" + random.nextLong(), "pass"));
+    voteService.vote(storedAnswerOption.getId(), otherUser);
+    assertEquals(voteService.voteCount(storedAnswerOption.getId()).intValue(), 2);
+
+  }
+
+  @Test
+  public void retractVote_UserExists_ShouldRemoveVote() {
     PollUser user = userDetailsService.createUser(new PollUser("sampleUser" + random.nextLong(), "pass"));
     Question question = new Question();
     question.setQuestionText("Is this a question?");
@@ -74,4 +95,19 @@ class VoteServiceIntegrationTest {
     assertTrue(userVoteDAO.findByIdUser(user).isEmpty());
     assertTrue(userVoteDAO.findByIdAnswerOption(answerOption).isEmpty());
   }
+
+  @Test(expected = DataIntegrityViolationException.class)
+  public void voteTwice_UserExists_ShouldPreventSecond() {
+    PollUser user = userDetailsService.createUser(new PollUser("sampleUser" + random.nextLong(), "pass"));
+    Question question = new Question();
+    question.setQuestionText("Is this a question?");
+    Question storedQuestion = pollService.createQuestion(question, user);
+    AnswerOption answerOption = new AnswerOption();
+    answerOption.setQuestion(storedQuestion);
+    answerOption.setOptionText("This is an option");
+    AnswerOption storedAnswerOption = pollService.createAnswerOption(storedQuestion.getId(), answerOption, user);
+    voteService.vote(storedAnswerOption.getId(), user);
+    voteService.vote(storedAnswerOption.getId(), user);
+  }
+
 }

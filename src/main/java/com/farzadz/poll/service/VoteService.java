@@ -6,6 +6,9 @@ import com.farzadz.poll.dataentry.entity.UserVote;
 import com.farzadz.poll.dataentry.entity.VotePK;
 import com.farzadz.poll.security.user.PollUser;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -40,5 +43,20 @@ public class VoteService {
     AnswerOption answerOption = pollService.getAnswerOption(answerOptionId);
     return userVoteDAO.findByIdUserAndIdAnswerOption(user, answerOption).orElseThrow(() -> new IllegalArgumentException(
         String.format("User %s has not voted for answerOption %s", user.getUsername(), answerOptionId)));
+  }
+
+  public Long voteCount(Long answerOptionId) {
+    return userVoteDAO.countByIdAnswerOptionId(answerOptionId);
+  }
+
+  public Map<AnswerOption, Long> questionStats(Long questionId) {
+    return pollService.getAnswerOptionsForQuestion(questionId).stream()
+        .collect(Collectors.toMap(Function.identity(), answerOption -> voteCount(answerOption.getId())));
+  }
+
+  public Map<AnswerOption, String> userQuestionAnswers(Long questionId) {
+    List<UserVote> userChoices = userVoteDAO.findByIdAnswerOptionQuestionId(questionId);
+    return userChoices.stream()
+        .collect(Collectors.toMap(userVote -> userVote.getId().getAnswerOption(), UserVote::getUsername));
   }
 }

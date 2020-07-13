@@ -25,4 +25,8 @@ public interface UserVoteDAO extends JpaRepository<UserVote, VotePK> {
   Long countByIdUser(PollUser user);
 
   Long countByIdUserUsername(String username);
+
+  List<UserVote> findByIdAnswerOptionId(Long answerOptionId);
+
+  List<UserVote> findByIdAnswerOptionQuestionId(Long questionId);
 }
