@@ -1,5 +1,9 @@
 package com.farzadz.poll.service;
 
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toSet;
+
 import com.farzadz.poll.dataentry.dao.UserVoteDAO;
 import com.farzadz.poll.dataentry.entity.AnswerOption;
 import com.farzadz.poll.dataentry.entity.UserVote;
@@ -7,15 +11,16 @@ import com.farzadz.poll.dataentry.entity.VotePK;
 import com.farzadz.poll.security.user.PollUser;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-@PreAuthorize("isAuthenticated()")
+@Transactional
 public class VoteService {
 
   private final PollService pollService;
@@ -54,9 +59,9 @@ public class VoteService {
         .collect(Collectors.toMap(Function.identity(), answerOption -> voteCount(answerOption.getId())));
   }
 
-  public Map<AnswerOption, String> userQuestionAnswers(Long questionId) {
+  public Map<AnswerOption, Set<String>> userQuestionAnswers(Long questionId) {
     List<UserVote> userChoices = userVoteDAO.findByIdAnswerOptionQuestionId(questionId);
-    return userChoices.stream()
-        .collect(Collectors.toMap(userVote -> userVote.getId().getAnswerOption(), UserVote::getUsername));
+    return userChoices.stream().collect(groupingBy(userVote -> userVote.getId().getAnswerOption(),
+        mapping(userVote -> userVote.getUsername(), toSet())));
   }
 }

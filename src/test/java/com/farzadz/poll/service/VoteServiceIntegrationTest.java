@@ -11,7 +11,9 @@ import com.farzadz.poll.dataentry.entity.Question;
 import com.farzadz.poll.dataentry.entity.UserVote;
 import com.farzadz.poll.security.user.PollUser;
 import com.farzadz.poll.security.user.PollUserDetailsService;
+import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +78,70 @@ public class VoteServiceIntegrationTest {
     voteService.vote(storedAnswerOption.getId(), otherUser);
     assertEquals(voteService.voteCount(storedAnswerOption.getId()).intValue(), 2);
 
+  }
+
+  @Test
+  public void questionStats_QuestionAndOptionsExist_ShouldUpdateAfterUserVote() {
+
+    PollUser owner = userDetailsService.createUser(new PollUser("sampleUser" + random.nextLong(), "pass"));
+    Question question = new Question();
+    question.setQuestionText("Is this a question?");
+    Question storedQuestion = pollService.createQuestion(question, owner);
+    AnswerOption firstOption = new AnswerOption();
+    firstOption.setQuestion(storedQuestion);
+    firstOption.setOptionText("This is the first option");
+
+    AnswerOption secondOption = new AnswerOption();
+    secondOption.setQuestion(storedQuestion);
+    secondOption.setOptionText("This is the second option");
+    AnswerOption firstStoredOption = pollService.createAnswerOption(storedQuestion.getId(), firstOption, owner);
+    AnswerOption secondStoredOption = pollService.createAnswerOption(storedQuestion.getId(), secondOption, owner);
+
+    Map<AnswerOption, Long> questionOptionStats = voteService.questionStats(storedQuestion.getId());
+    assertTrue(questionOptionStats.keySet().containsAll(Set.of(firstStoredOption, secondStoredOption)));
+    assertEquals(questionOptionStats.get(firstStoredOption).intValue(), 0);
+    assertEquals(questionOptionStats.get(secondStoredOption).intValue(), 0);
+
+    voteService.vote(firstStoredOption.getId(), owner);
+    questionOptionStats = voteService.questionStats(storedQuestion.getId());
+    assertEquals(questionOptionStats.get(firstStoredOption).intValue(), 1);
+    assertEquals(questionOptionStats.get(secondStoredOption).intValue(), 0);
+
+    voteService.vote(secondStoredOption.getId(), owner);
+    questionOptionStats = voteService.questionStats(storedQuestion.getId());
+    assertEquals(questionOptionStats.get(firstStoredOption).intValue(), 1);
+    assertEquals(questionOptionStats.get(secondStoredOption).intValue(), 1);
+
+  }
+
+  @Test
+  public void userQuestionAnswers_QuestionAndOptionsExist_ShouldUpdateAfterUserVote() {
+
+    PollUser owner = userDetailsService.createUser(new PollUser("sampleUser" + random.nextLong(), "pass"));
+    Question question = new Question();
+    question.setQuestionText("Is this a question?");
+    Question storedQuestion = pollService.createQuestion(question, owner);
+    AnswerOption firstOption = new AnswerOption();
+    firstOption.setQuestion(storedQuestion);
+    firstOption.setOptionText("This is the first option");
+
+    AnswerOption secondOption = new AnswerOption();
+    secondOption.setQuestion(storedQuestion);
+    secondOption.setOptionText("This is the second option");
+    AnswerOption firstStoredOption = pollService.createAnswerOption(storedQuestion.getId(), firstOption, owner);
+    AnswerOption secondStoredOption = pollService.createAnswerOption(storedQuestion.getId(), secondOption, owner);
+
+    Map<AnswerOption, Set<String>> usersAnswers = voteService.userQuestionAnswers(storedQuestion.getId());
+
+    assertTrue(usersAnswers.isEmpty());
+
+    voteService.vote(firstStoredOption.getId(), owner);
+    usersAnswers = voteService.userQuestionAnswers(storedQuestion.getId());
+    assertTrue(usersAnswers.get(firstStoredOption).contains(owner.getUsername()));
+
+    voteService.vote(secondStoredOption.getId(), owner);
+    usersAnswers = voteService.userQuestionAnswers(storedQuestion.getId());
+    assertTrue(usersAnswers.get(secondStoredOption).contains(owner.getUsername()));
   }
 
   @Test
