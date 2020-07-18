@@ -1,5 +1,8 @@
 [![Build Status](https://travis-ci.org/farzadz/pollApp.svg?branch=master)](https://travis-ci.org/farzadz/pollApp)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 </br>
+
 # Spring Boot Polling API
 
 This repository contains a Spring Boot application that defines a minimal REST API for creating polls.
