@@ -61,7 +61,7 @@ public class VoteService {
 
   public Map<AnswerOption, Set<String>> userQuestionAnswers(Long questionId) {
     List<UserVote> userChoices = userVoteDAO.findByIdAnswerOptionQuestionId(questionId);
-    return userChoices.stream().collect(groupingBy(userVote -> userVote.getId().getAnswerOption(),
-        mapping(userVote -> userVote.getUsername(), toSet())));
+    return userChoices.stream()
+        .collect(groupingBy(userVote -> userVote.getId().getAnswerOption(), mapping(UserVote::getUsername, toSet())));
   }
 }

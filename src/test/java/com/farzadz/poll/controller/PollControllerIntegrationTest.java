@@ -25,9 +25,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-/**
- * Uses TestUtils instead of mockUser annotations
- */
 
 @AutoConfigureMockMvc
 @RunWith(SpringJUnit4ClassRunner.class)

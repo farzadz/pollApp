@@ -10,6 +10,10 @@ public class PollEndpoints {
 
   public static final String POLL_QUESTION_PATH = POLL_QUESTIONS_PATH + "/{questionId}";
 
+  public static final String POLL_QUESTION_STATS_PATH = POLL_QUESTION_PATH + "/stats";
+
+  public static final String POLL_QUESTION_USERS_STATS_PATH = POLL_QUESTION_STATS_PATH + "/users";
+
   public static final String POLL_ANSWER_OPTIONS_PATH = POLL_QUESTION_PATH + "/answerOptions";
 
   public static final String POLL_ANSWER_OPTION_PATH = POLL_ANSWER_OPTIONS_PATH + "/{answerOptionId}";

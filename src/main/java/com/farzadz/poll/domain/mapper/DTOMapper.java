@@ -17,6 +17,7 @@ import ma.glasnost.orika.converter.ConverterFactory;
 import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 @Configuration
 public class DTOMapper extends ConfigurableMapper {
@@ -40,6 +41,7 @@ public class DTOMapper extends ConfigurableMapper {
   }
 
   @Bean
+  @Primary
   public MapperFacade mapper() {
     return new DTOMapper();
   }
