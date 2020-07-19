@@ -1,12 +1,10 @@
 server:
   port:
     9090
-  #
-  #  servlet:
-  #    context-path : "/api"
 
 
-  ## default connection pool
+
+## default connection pool
 spring:
   jpa:
     properties:
@@ -14,7 +12,7 @@ spring:
         dialect: "org.hibernate.dialect.PostgreSQLDialect"
         jpa:
           hibernate.ddl-auto : none
-          show-sql : true
+          show-sql: true
   datasource:
     hikari:
       connectionTimeout: 20000
@@ -24,18 +22,21 @@ spring:
     url: jdbc:postgresql://localhost:5440/postgres
     username: "postgres"
     password: "password"
-    initialization-mode: "always"
-    continue-on-error: true
-    schema: "classpath:/schema.sql, classpath:/data.sql"
-logging:
-  level:
-    org:
-      hibernate:
-        SQL: DEBUG
-        type:
-          descriptor:
-            sql:
-              BasicBinder: Trace
+  flyway:
+    enabled: true
+    locations: classpath:db/migration/postgresql
+    schemas: public
+    baseline-on-migrate: true
 
-      springframework:
-        security: DEBUG
+#logging:
+#  level:
+#    org:
+#      hibernate:
+#        SQL: DEBUG
+#        type:
+#          descriptor:
+#            sql:
+#              BasicBinder: Trace
+#
+#      springframework:
+#        security: DEBUG
